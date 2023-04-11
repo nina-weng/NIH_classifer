@@ -12,7 +12,7 @@ def main():
 
     # point to the parent directory that contains the folder 'isic_images'
     img_data_dir = '/work3/ninwe/dataset/NIH/'
-    img_data_dir = 'D:\\ninavv\\phd\\data\\NIH\\'
+    # img_data_dir = 'D:\\ninavv\\phd\\data\\NIH\\'
     csv_file = '../datafiles/'+'Data_Entry_2017_v2020_clean_split.csv'
 
     df = pd.read_csv(csv_file,header=0)
