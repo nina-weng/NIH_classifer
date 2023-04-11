@@ -33,9 +33,9 @@ augmentation = False
 run_config='{}-lr{}-ep{}-pt{}-aug{}'.format(model_choose,lr,epochs,int(pretrained),int(augmentation))
 
 img_data_dir = '/work3/ninwe/dataset/NIH/images/'
-# img_data_dir = 'D:/ninavv/phd/data/NIH/images/'
+img_data_dir = 'D:/ninavv/phd/data/NIH/images/'
 csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split.csv'
-# csv_file_img = 'D:/ninavv/phd/data/NIH/'+'Data_Entry_2017_v2020_clean_split_fake.csv'
+csv_file_img = 'D:/ninavv/phd/data/NIH/'+'Data_Entry_2017_v2020_clean_split_fake.csv'
 
 
 def get_cur_version(dir_path):
@@ -109,7 +109,7 @@ def main(hparams):
     data = NIHDataModule(img_data_dir=img_data_dir,
                             csv_file_img=csv_file_img,
                             image_size=image_size,
-                            pseudo_rgb=True,
+                            pseudo_rgb=False,
                             batch_size=batch_size,
                             num_workers=num_workers,
                             augmentation=augmentation)
@@ -133,7 +133,7 @@ def main(hparams):
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
 
-    for idx in range(0,10):
+    for idx in range(0,5):
         if augmentation:
             sample = data.train_set.exam_augmentation(idx)
             sample = np.asarray(sample)

@@ -6,7 +6,7 @@ import numpy as np
 
 import torchvision.transforms as T
 import pytorch_lightning as pl
-
+import torchvision.transforms.functional as F
 
 from PIL import Image
 from tqdm import tqdm
@@ -76,7 +76,7 @@ class NIHDataset(Dataset):
     def get_sample(self, item):
         sample = self.samples[item]
         # image = imread(sample['image_path']).astype(np.float32)
-        image = Image.open(sample['image_path']) #PIL image
+        image = Image.open(sample['image_path']).convert('RGB') #PIL image
 
         return {'image': image, 'label': sample['label']}
 
