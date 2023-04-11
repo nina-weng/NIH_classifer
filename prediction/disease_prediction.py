@@ -106,7 +106,7 @@ def main(hparams):
     pl.seed_everything(42, workers=True)
 
     # data
-    data = ISICDataModule(img_data_dir=img_data_dir,
+    data = NIHDataModule(img_data_dir=img_data_dir,
                             csv_file_img=csv_file_img,
                             image_size=image_size,
                             pseudo_rgb=False,
