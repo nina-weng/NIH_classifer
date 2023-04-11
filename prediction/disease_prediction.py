@@ -28,7 +28,7 @@ num_workers = 1 ###
 model_choose = 'densenet' # or 'densenet'
 lr=1e-5
 pretrained = True
-augmentation = True
+augmentation = False
 
 run_config='{}-lr{}-ep{}-pt{}-aug{}'.format(model_choose,lr,epochs,int(pretrained),int(augmentation))
 
@@ -108,7 +108,7 @@ def main(hparams):
     data = NIHDataModule(img_data_dir=img_data_dir,
                             csv_file_img=csv_file_img,
                             image_size=image_size,
-                            pseudo_rgb=False,
+                            pseudo_rgb=True,
                             batch_size=batch_size,
                             num_workers=num_workers,
                             augmentation=augmentation)
