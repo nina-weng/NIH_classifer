@@ -90,7 +90,7 @@ class NIHDataset(Dataset):
             image_aug = self.augment(image)
 
         image_all = torch.cat((image,image_aug),axis= 1)
-        assert image_all.shape[1]==224*2, 'image_all.shape[1] = {}'.format(image_all.shape[1])
+        assert image_all.shape[1]==self.image_size[0]*2, 'image_all.shape[1] = {}'.format(image_all.shape[1])
         return image_all
 
 

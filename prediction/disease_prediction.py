@@ -18,7 +18,7 @@ from argparse import ArgumentParser
 
 
 num_classes = len(DISEASE_LABELS)
-image_size = (224, 224)
+image_size = (1024, 1024)
 
 
 # parameters that could change
