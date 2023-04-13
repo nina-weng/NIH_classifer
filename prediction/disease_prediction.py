@@ -16,26 +16,33 @@ from skimage.io import imsave
 from tqdm import tqdm
 from argparse import ArgumentParser
 
-
 num_classes = len(DISEASE_LABELS)
 image_size = (1024, 1024)
 
 
 # parameters that could change
-batch_size = 64
-epochs = 2
-num_workers = 1 ###
-model_choose = 'densenet' # or 'densenet'
+batch_size = 32
+epochs = 20
+num_workers = 2 ###
+model_choose = 'resnet' # or 'densenet'
+model_scale = '18'
 lr=1e-5
 pretrained = True
-augmentation = False
+augmentation = True
+only_AP = True
 
-run_config='{}-lr{}-ep{}-pt{}-aug{}'.format(model_choose,lr,epochs,int(pretrained),int(augmentation))
+run_config='{}{}-lr{}-ep{}-pt{}-aug{}-AP{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),int(augmentation),int(only_AP))
 
-img_data_dir = '/work3/ninwe/dataset/NIH/images/'
-img_data_dir = 'D:/ninavv/phd/data/NIH/images/'
-csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split.csv'
-csv_file_img = 'D:/ninavv/phd/data/NIH/'+'Data_Entry_2017_v2020_clean_split_fake.csv'
+if image_size[0] == 224:
+    img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
+elif image_size[0] == 1024:
+    img_data_dir = '/work3/ninwe/dataset/NIH/images/'
+
+if only_AP:
+    csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split_AP.csv'
+else:
+    csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split.csv'
+#csv_file_img = 'D:/ninavv/phd/data/NIH/'+'Data_Entry_2017_v2020_clean_split_fake.csv'
 
 
 def get_cur_version(dir_path):
@@ -137,7 +144,7 @@ def main(hparams):
         if augmentation:
             sample = data.train_set.exam_augmentation(idx)
             sample = np.asarray(sample)
-            # sample = np.transpose(sample, (2, 1, 0))S
+            sample = np.transpose(sample, (2, 1, 0))
             imsave(os.path.join(temp_dir, 'sample_' + str(idx) + '.png'), sample)
         else:
             sample = data.train_set.get_sample(idx) #PIL

@@ -9,12 +9,21 @@ from torchmetrics.classification import MultilabelAUROC
 
 
 class ResNet(pl.LightningModule):
-    def __init__(self, num_classes,lr,pretrained):
+    def __init__(self, num_classes,lr,pretrained,model_scale):
         super().__init__()
         self.model_name = 'resnet'
         self.num_classes = num_classes
         self.pretrained=pretrained
-        self.model = models.resnet34(pretrained=self.pretrained)
+        self.model_scale = model_scale
+        if self.model_scale == '18':
+            self.model = models.resnet18(pretrained=self.pretrained)
+        elif self.model_scale == '34':
+            self.model = models.resnet34(pretrained=self.pretrained)
+        elif self.model_scale == '50':
+            self.model = models.resnet50(pretrained=self.pretrained)
+        else:
+            raise Exception('not implemented model scale: '+model_scale)
+
         # freeze_model(self.model)
         num_features = self.model.fc.in_features
         self.model.fc = nn.Linear(num_features, self.num_classes)
