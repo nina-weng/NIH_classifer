@@ -126,7 +126,7 @@ def main(hparams):
         model_type = ResNet
     elif model_choose == 'densenet':
         model_type = DenseNet
-    model = model_type(num_classes=num_classes,lr=lr,pretrained=pretrained)
+    model = model_type(num_classes=num_classes,lr=lr,pretrained=pretrained,model_scale=model_scale)
 
     # Create output directory
     #out_name = str(model.model_name)
@@ -169,6 +169,7 @@ def main(hparams):
 
     model = model_type.load_from_checkpoint(trainer.checkpoint_callback.best_model_path,
                                             num_classes=num_classes,lr=lr,pretrained=pretrained,
+                                            model_scale=model_scale,
                                             )
 
     use_cuda = torch.cuda.is_available()
