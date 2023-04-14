@@ -4,6 +4,7 @@ sys.path.append('../../NIH_classifer')
 from dataloader.dataloader import NIHDataset,NIHDataModule,DISEASE_LABELS
 from prediction.models import ResNet,DenseNet
 
+
 import os
 import torch
 import pandas as pd
@@ -12,6 +13,7 @@ import pytorch_lightning as pl
 
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from skimage.io import imsave
 from tqdm import tqdm
 from argparse import ArgumentParser
@@ -161,8 +163,9 @@ def main(hparams):
 
     # train
     trainer = pl.Trainer(
-        callbacks=[checkpoint_callback],
-        log_every_n_steps = 5,
+        # callbacks=[checkpoint_callback],
+        callbacks=[EarlyStopping(monitor="val_loss", mode="min")],
+        log_every_n_steps = 1,
         max_epochs=epochs,
         gpus=hparams.gpus,
         accelerator="auto",
