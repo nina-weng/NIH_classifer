@@ -31,11 +31,13 @@ model_scale = '18'
 lr=1e-5
 pretrained = True
 augmentation = True
-only_AP = True
+
+
+view_position = 'PA' # 'AP','PA','all'
 only_gender = 'F' #'F' , 'M', None
 
-run_config='{}{}-lr{}-ep{}-pt{}-aug{}-AP{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
-                                                          int(augmentation),int(only_AP),str(only_gender),
+run_config='{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
+                                                          int(augmentation),str(view_position),str(only_gender),
                                                           image_size[0])
 
 if image_size[0] == 224:
@@ -125,6 +127,7 @@ def main(hparams):
                             batch_size=batch_size,
                             num_workers=num_workers,
                             augmentation=augmentation,
+                            view_position = view_position,
                             only_gender=only_gender)
 
     # model
