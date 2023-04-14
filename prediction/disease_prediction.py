@@ -23,7 +23,7 @@ image_size = (1024, 1024)
 image_size = (224, 224)
 
 # parameters that could change
-batch_size = 32
+batch_size = 64
 epochs = 20
 num_workers = 2 ###
 model_choose = 'resnet' # or 'densenet'
@@ -34,7 +34,7 @@ augmentation = True
 
 
 view_position = 'PA' # 'AP','PA','all'
-only_gender = 'F' #'F' , 'M', None
+only_gender = None #'F' , 'M', None
 
 run_config='{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
                                                           int(augmentation),str(view_position),str(only_gender),
@@ -45,10 +45,8 @@ if image_size[0] == 224:
 elif image_size[0] == 1024:
     img_data_dir = '/work3/ninwe/dataset/NIH/images/'
 
-if only_AP:
-    csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split_AP.csv'
-else:
-    csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split.csv'
+
+csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split.csv'
 #csv_file_img = 'D:/ninavv/phd/data/NIH/'+'Data_Entry_2017_v2020_clean_split_fake.csv'
 
 
