@@ -18,7 +18,7 @@ from argparse import ArgumentParser
 
 num_classes = len(DISEASE_LABELS)
 image_size = (1024, 1024)
-
+image_size = (224, 224)
 
 # parameters that could change
 batch_size = 32
@@ -30,8 +30,11 @@ lr=1e-5
 pretrained = True
 augmentation = True
 only_AP = True
+only_gender = 'F' #'F' , 'M', None
 
-run_config='{}{}-lr{}-ep{}-pt{}-aug{}-AP{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),int(augmentation),int(only_AP))
+run_config='{}{}-lr{}-ep{}-pt{}-aug{}-AP{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
+                                                          int(augmentation),int(only_AP),str(only_gender),
+                                                          image_size[0])
 
 if image_size[0] == 224:
     img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
@@ -119,7 +122,8 @@ def main(hparams):
                             pseudo_rgb=False,
                             batch_size=batch_size,
                             num_workers=num_workers,
-                            augmentation=augmentation)
+                            augmentation=augmentation,
+                            only_gender=only_gender)
 
     # model
     if model_choose == 'resnet':
