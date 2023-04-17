@@ -84,11 +84,16 @@ class ResNet(pl.LightningModule):
 
 
 class DenseNet(pl.LightningModule):
-    def __init__(self, num_classes,lr,pretrained):
+    def __init__(self, num_classes,lr,pretrained,model_scale='121'):
         super().__init__()
         self.model_name = 'densenet'
         self.num_classes = num_classes
-        self.model = models.densenet121(pretrained=pretrained)
+        self.model_scale= model_scale
+        if self.model_scale == '121':
+            self.model = models.densenet121(pretrained=self.pretrained)
+        else:
+            raise Exception('not implemented model scale: '+model_scale)
+
         # freeze_model(self.model)
         num_features = self.model.classifier.in_features
         self.model.classifier = nn.Linear(num_features, self.num_classes)
