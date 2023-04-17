@@ -101,11 +101,12 @@ class NIHDataset(Dataset):
 
 class NIHDataModule(pl.LightningDataModule):
     def __init__(self, img_data_dir,csv_file_img, image_size, pseudo_rgb, batch_size, num_workers,augmentation,
-                 view_position='all',only_gender=None):
+                 view_position='all',vp_sample=False,only_gender=None):
         super().__init__()
         self.img_data_dir = img_data_dir
         self.csv_file_img = csv_file_img
         self.view_position = view_position
+        self.vp_sample = vp_sample
         self.only_gender = only_gender
 
         df_train,df_valid,df_test = self.dataset_split(self.csv_file_img)
@@ -149,7 +150,10 @@ class NIHDataModule(pl.LightningDataModule):
         if self.only_gender != None:
             df_train = df_train[df_train['Patient Gender'] == self.only_gender]
 
-
+        if self.vp_sample!= None:
+            sample_rate = 0.4
+            seed = 2023
+            df_train = df_train.sample(frac=sample_rate, replace=False, random_state=seed)
 
         return df_train,df_val,df_test
 

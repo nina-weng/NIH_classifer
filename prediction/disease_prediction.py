@@ -33,11 +33,14 @@ pretrained = True
 augmentation = True
 
 
-view_position = 'PA' # 'AP','PA','all'
+view_position = 'all' # 'AP','PA','all'
+vp_sample = True
 only_gender = None #'F' , 'M', None
 
-run_config='{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
-                                                          int(augmentation),str(view_position),str(only_gender),
+
+run_config='{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-sam{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
+                                                          int(augmentation),str(view_position),int(vp_sample),
+                                                                      str(only_gender),
                                                           image_size[0])
 
 if image_size[0] == 224:
@@ -126,6 +129,7 @@ def main(hparams):
                             num_workers=num_workers,
                             augmentation=augmentation,
                             view_position = view_position,
+                            vp_sample = vp_sample,
                             only_gender=only_gender)
 
     # model
