@@ -150,7 +150,7 @@ class NIHDataModule(pl.LightningDataModule):
         if self.only_gender != None:
             df_train = df_train[df_train['Patient Gender'] == self.only_gender]
 
-        if self.vp_sample!= None:
+        if self.vp_sample == True:
             sample_rate = 0.4
             seed = 2023
             df_train = df_train.sample(frac=sample_rate, replace=False, random_state=seed)
