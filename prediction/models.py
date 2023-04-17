@@ -87,6 +87,8 @@ class DenseNet(pl.LightningModule):
     def __init__(self, num_classes,lr,pretrained,model_scale='121'):
         super().__init__()
         self.model_name = 'densenet'
+        self.lr = lr
+        self.pretrained = pretrained
         self.num_classes = num_classes
         self.model_scale= model_scale
         if self.model_scale == '121':
@@ -97,8 +99,7 @@ class DenseNet(pl.LightningModule):
         # freeze_model(self.model)
         num_features = self.model.classifier.in_features
         self.model.classifier = nn.Linear(num_features, self.num_classes)
-        self.lr = lr
-        self.pretrained = pretrained
+
         self.accu_func = Accuracy(task="multilabel", num_labels=num_classes)
         self.auroc_func = MultilabelAUROC(num_labels=num_classes, average='macro', thresholds=None)
 
