@@ -103,7 +103,7 @@ class NIHDataset(Dataset):
 
 class NIHDataModule(pl.LightningDataModule):
     def __init__(self, img_data_dir,csv_file_img, image_size, pseudo_rgb, batch_size, num_workers,augmentation,
-                 view_position='all',vp_sample=False,only_gender=None,save_split=True,outdir=None,version_no=None):
+                 view_position='all',vp_sample=False,only_gender=None,save_split=True,outdir=None,version_no=None,gi_split=False):
         super().__init__()
         self.img_data_dir = img_data_dir
         self.csv_file_img = csv_file_img
@@ -113,12 +113,17 @@ class NIHDataModule(pl.LightningDataModule):
         self.save_split=save_split
         self.outdir = outdir
         self.version_no = version_no
+        self.gi_split = gi_split
 
-
-        df_train,df_valid,df_test = self.dataset_split(self.csv_file_img)
-        self.df_train = df_train
-        self.df_valid = df_valid
-        self.df_test = df_test
+        if self.gi_split:
+            self.df_train = pd.read_csv('../datafiles/0%_female/FOLD_1/train.csv',header=0)
+            self.df_val = pd.read_csv('../datafiles/0%_female/FOLD_1/dev.csv', header=0)
+            self.df_test = pd.read_csv('../datafiles/0%_female/FOLD_1/test.csv', header=0)
+        else:
+            df_train,df_valid,df_test = self.dataset_split(self.csv_file_img)
+            self.df_train = df_train
+            self.df_valid = df_valid
+            self.df_test = df_test
 
         self.image_size = image_size
         self.batch_size = batch_size

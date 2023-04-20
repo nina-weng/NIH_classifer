@@ -32,18 +32,28 @@ lr=1e-5
 pretrained = True
 augmentation = True
 
+gi_split=True
 
-view_position = 'AP' # 'AP','PA','all'
-vp_sample = False
-if vp_sample and view_position != 'all':
-    raise Exception('Could not sample the train set anymore for VP=AP/PA!')
-only_gender = None #'F' , 'M', None
+if not gi_split:
+    view_position = 'AP' # 'AP','PA','all'
+    vp_sample = False
+    if vp_sample and view_position != 'all':
+        raise Exception('Could not sample the train set anymore for VP=AP/PA!')
+    only_gender = None #'F' , 'M', None
 
 
-run_config='{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-sam{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
+    run_config='{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-sam{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
                                                           int(augmentation),str(view_position),int(vp_sample),
                                                                       str(only_gender),
                                                           image_size[0])
+else:
+    run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-GIsplit-imgs{}'.format(model_choose, model_scale, lr, epochs,
+                                                                            int(pretrained),
+                                                                            int(augmentation),
+                                                                            image_size[0])
+    view_position = 'all'  # 'AP','PA','all'
+    vp_sample = False
+    only_gender = None  # 'F' , 'M', None
 
 if image_size[0] == 224:
     img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
@@ -146,7 +156,8 @@ def main(hparams):
                             only_gender=only_gender,
                          save_split=True,
                          outdir=out_dir,
-                         version_no=cur_version)
+                         version_no=cur_version,
+                         gi_split=gi_split)
 
     # model
     if model_choose == 'resnet':
