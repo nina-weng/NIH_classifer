@@ -120,6 +120,17 @@ def main(hparams):
     # sets seeds for numpy, torch, python.random and PYTHONHASHSEED.
     pl.seed_everything(42, workers=True)
 
+    # Create output directory
+    # out_name = str(model.model_name)
+    out_dir = '/work3/ninwe/run/NIH/disease/' + run_config
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
+    cur_version = get_cur_version(out_dir)
+
+
+
+
     # data
     data = NIHDataModule(img_data_dir=img_data_dir,
                             csv_file_img=csv_file_img,
@@ -130,7 +141,10 @@ def main(hparams):
                             augmentation=augmentation,
                             view_position = view_position,
                             vp_sample = vp_sample,
-                            only_gender=only_gender)
+                            only_gender=only_gender,
+                         save_split=True,
+                         outdir=out_dir,
+                         version_no=cur_version)
 
     # model
     if model_choose == 'resnet':
@@ -138,14 +152,6 @@ def main(hparams):
     elif model_choose == 'densenet':
         model_type = DenseNet
     model = model_type(num_classes=num_classes,lr=lr,pretrained=pretrained,model_scale=model_scale)
-
-    # Create output directory
-    #out_name = str(model.model_name)
-    out_dir = '/work3/ninwe/run/NIH/disease/' + run_config
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-
-    cur_version = get_cur_version(out_dir)
 
     temp_dir = os.path.join(out_dir, 'temp_version_{}'.format(cur_version))
     if not os.path.exists(temp_dir):

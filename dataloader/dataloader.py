@@ -10,6 +10,7 @@ import torchvision.transforms.functional as F
 from skimage.io import imread
 from PIL import Image
 from tqdm import tqdm
+import os
 
 
 
@@ -25,6 +26,7 @@ class NIHDataset(Dataset):
         self.image_size = image_size
         self.do_augment = augmentation
         self.pseudo_rgb = pseudo_rgb
+
 
         # self.labels = ['melanoma','nevus','basal cell carcinoma','actinic keratosis','benign keratosis','dermatofibroma',
         #   'vascular lesion','squamous cell carcinoma','others']
@@ -101,13 +103,17 @@ class NIHDataset(Dataset):
 
 class NIHDataModule(pl.LightningDataModule):
     def __init__(self, img_data_dir,csv_file_img, image_size, pseudo_rgb, batch_size, num_workers,augmentation,
-                 view_position='all',vp_sample=False,only_gender=None):
+                 view_position='all',vp_sample=False,only_gender=None,save_split=True,outdir=None,version_no=None):
         super().__init__()
         self.img_data_dir = img_data_dir
         self.csv_file_img = csv_file_img
         self.view_position = view_position
         self.vp_sample = vp_sample
         self.only_gender = only_gender
+        self.save_split=save_split
+        self.outdir = outdir
+        self.version_no = version_no
+
 
         df_train,df_valid,df_test = self.dataset_split(self.csv_file_img)
         self.df_train = df_train
@@ -154,6 +160,11 @@ class NIHDataModule(pl.LightningDataModule):
             sample_rate = 0.4
             seed = 2023
             df_train = df_train.sample(frac=sample_rate, replace=False, random_state=seed)
+
+        if self.save_split:
+            df_train.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)), index=False)
+            df_val.to_csv(os.path.join(self.outdir, 'val.version_{}.csv'.format(self.version_no)), index=False)
+            df_test.to_csv(os.path.join(self.outdir, 'test.version_{}.csv'.format(self.version_no)), index=False)
 
         return df_train,df_val,df_test
 
