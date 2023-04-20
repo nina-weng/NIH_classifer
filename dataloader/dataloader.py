@@ -117,7 +117,7 @@ class NIHDataModule(pl.LightningDataModule):
 
         if self.gi_split:
             self.df_train = pd.read_csv('../datafiles/100%_female/FOLD_0/train.csv',header=0)
-            self.df_val = pd.read_csv('../datafiles/100%_female/FOLD_0/dev.csv', header=0)
+            self.df_valid = pd.read_csv('../datafiles/100%_female/FOLD_0/dev.csv', header=0)
             df_test_male = pd.read_csv('../datafiles/100%_female/FOLD_0/test_males.csv', header=0)
             df_test_female = pd.read_csv('../datafiles/100%_female/FOLD_0/test_female.csv', header=0)
             df_test = pd.concat([df_test_male, df_test_female])
