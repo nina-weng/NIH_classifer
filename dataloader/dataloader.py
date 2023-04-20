@@ -18,7 +18,7 @@ import os
 # disease_labels = ['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC', 'UNK']
 DISEASE_LABELS = ['Effusion', 'Emphysema', 'Nodule', 'Atelectasis', 'Infiltration', 'Mass',
                   'Pleural_Thickening', 'Pneumothorax',
-                  'Consolidation', 'Fibrosis', 'Cardiomegaly', 'Pneumonia', 'Edema', 'Hernia', 'No Finding']
+                  'Consolidation', 'Fibrosis', 'Cardiomegaly', 'Pneumonia', 'Edema', 'Hernia']#, 'No Finding']
 
 class NIHDataset(Dataset):
     def __init__(self, img_data_dir, df_data, image_size, augmentation=False, pseudo_rgb = False):
