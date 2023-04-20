@@ -116,9 +116,13 @@ class NIHDataModule(pl.LightningDataModule):
         self.gi_split = gi_split
 
         if self.gi_split:
-            self.df_train = pd.read_csv('../datafiles/0%_female/FOLD_1/train.csv',header=0)
-            self.df_val = pd.read_csv('../datafiles/0%_female/FOLD_1/dev.csv', header=0)
-            self.df_test = pd.read_csv('../datafiles/0%_female/FOLD_1/test.csv', header=0)
+            self.df_train = pd.read_csv('../datafiles/100%_female/FOLD_0/train.csv',header=0)
+            self.df_val = pd.read_csv('../datafiles/100%_female/FOLD_0/dev.csv', header=0)
+            df_test_male = pd.read_csv('../datafiles/100%_female/FOLD_0/test_males.csv', header=0)
+            df_test_female = pd.read_csv('../datafiles/100%_female/FOLD_0/test_females.csv', header=0)
+            df_test = pd.concat([df_test_male, df_test_female])
+            df_test.reset_index(inplace = True)
+            self.df_test = df_test
         else:
             df_train,df_valid,df_test = self.dataset_split(self.csv_file_img)
             self.df_train = df_train
