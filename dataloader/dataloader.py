@@ -119,7 +119,7 @@ class NIHDataModule(pl.LightningDataModule):
             self.df_train = pd.read_csv('../datafiles/100%_female/FOLD_0/train.csv',header=0)
             self.df_val = pd.read_csv('../datafiles/100%_female/FOLD_0/dev.csv', header=0)
             df_test_male = pd.read_csv('../datafiles/100%_female/FOLD_0/test_males.csv', header=0)
-            df_test_female = pd.read_csv('../datafiles/100%_female/FOLD_0/test_females.csv', header=0)
+            df_test_female = pd.read_csv('../datafiles/100%_female/FOLD_0/test_female.csv', header=0)
             df_test = pd.concat([df_test_male, df_test_female])
             df_test.reset_index(inplace = True)
             self.df_test = df_test
