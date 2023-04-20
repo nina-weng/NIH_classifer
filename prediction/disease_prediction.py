@@ -33,8 +33,10 @@ pretrained = True
 augmentation = True
 
 
-view_position = 'all' # 'AP','PA','all'
-vp_sample = True
+view_position = 'AP' # 'AP','PA','all'
+vp_sample = False
+if vp_sample and view_position != 'all':
+    raise Exception('Could not sample the train set anymore for VP=AP/PA!')
 only_gender = None #'F' , 'M', None
 
 
