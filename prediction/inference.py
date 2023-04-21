@@ -6,7 +6,7 @@ import pandas as pd
 
 from prediction.models import ResNet,DenseNet
 from dataloader.dataloader import NIHDataset,NIHDataModule,DISEASE_LABELS
-from prediction.disease_prediction import test_func
+from prediction.disease_prediction import test_func,embeddings
 
 if __name__ == '__main__':
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     view_position='AP'
     vp_sample=False
     only_gender=None
-    save_split=False
+    save_split=True
     out_dir = '/work3/ninwe/run/NIH/disease/' + run_config +'/orisplit/'
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
@@ -98,3 +98,19 @@ if __name__ == '__main__':
     df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
     df = pd.concat([df, df_logits, df_targets], axis=1)
     df.to_csv(os.path.join(out_dir, 'predictions.test.version_{}.csv'.format(cur_version)), index=False)
+
+    print('EMBEDDINGS')
+
+    model.remove_head()
+
+    embeds_val, targets_val = embeddings(model, data.val_dataloader(), device)
+    df = pd.DataFrame(data=embeds_val)
+    df_targets = pd.DataFrame(data=targets_val, columns=cols_names_targets)
+    df = pd.concat([df, df_targets], axis=1)
+    df.to_csv(os.path.join(out_dir, 'embeddings.val.version_{}.csv'.format(cur_version)), index=False)
+
+    embeds_test, targets_test = embeddings(model, data.test_dataloader(), device)
+    df = pd.DataFrame(data=embeds_test)
+    df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
+    df = pd.concat([df, df_targets], axis=1)
+    df.to_csv(os.path.join(out_dir, 'embeddings.test.version_{}.csv'.format(cur_version)), index=False)
