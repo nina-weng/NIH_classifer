@@ -103,7 +103,8 @@ class NIHDataset(Dataset):
 
 class NIHDataModule(pl.LightningDataModule):
     def __init__(self, img_data_dir,csv_file_img, image_size, pseudo_rgb, batch_size, num_workers,augmentation,
-                 view_position='all',vp_sample=False,only_gender=None,save_split=True,outdir=None,version_no=None,gi_split=False):
+                 view_position='all',vp_sample=False,only_gender=None,save_split=True,outdir=None,version_no=None,
+                 gi_split=False,fold_num=0):
         super().__init__()
         self.img_data_dir = img_data_dir
         self.csv_file_img = csv_file_img
@@ -114,12 +115,13 @@ class NIHDataModule(pl.LightningDataModule):
         self.outdir = outdir
         self.version_no = version_no
         self.gi_split = gi_split
+        self.fold_num = fold_num
 
         if self.gi_split:
-            self.df_train = pd.read_csv('../datafiles/100%_female/FOLD_0/train.csv',header=0)
-            self.df_valid = pd.read_csv('../datafiles/100%_female/FOLD_0/dev.csv', header=0)
-            df_test_male = pd.read_csv('../datafiles/100%_female/FOLD_0/test_males.csv', header=0)
-            df_test_female = pd.read_csv('../datafiles/100%_female/FOLD_0/test_female.csv', header=0)
+            self.df_train = pd.read_csv('../datafiles/100%_female/Fold_{}/train.csv'.format(self.fold_num),header=0)
+            self.df_valid = pd.read_csv('../datafiles/100%_female/Fold_{}/dev.csv'.format(self.fold_num), header=0)
+            df_test_male = pd.read_csv('../datafiles/100%_female/Fold_{}/test_males.csv'.format(self.fold_num), header=0)
+            df_test_female = pd.read_csv('../datafiles/100%_female/Fold_{}/test_female.csv'.format(self.fold_num), header=0)
             df_test = pd.concat([df_test_male, df_test_female])
             df_test.reset_index(inplace = True)
             self.df_test = df_test

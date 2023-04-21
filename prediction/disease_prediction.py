@@ -33,6 +33,7 @@ pretrained = True
 augmentation = True
 
 gi_split=True
+fold_num = 1
 
 if not gi_split:
     view_position = 'AP' # 'AP','PA','all'
@@ -47,9 +48,9 @@ if not gi_split:
                                                                       str(only_gender),
                                                           image_size[0])
 else:
-    run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-GIsplit-imgs{}'.format(model_choose, model_scale, lr, epochs,
+    run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-GIsplit-Fold{}-imgs{}'.format(model_choose, model_scale, lr, epochs,
                                                                             int(pretrained),
-                                                                            int(augmentation),
+                                                                            int(augmentation),fold_num,
                                                                             image_size[0])
     view_position = 'all'  # 'AP','PA','all'
     vp_sample = False
@@ -157,7 +158,8 @@ def main(hparams):
                          save_split=True,
                          outdir=out_dir,
                          version_no=cur_version,
-                         gi_split=gi_split)
+                         gi_split=gi_split,
+                         fold_num=fold_num)
 
     # model
     if model_choose == 'resnet':
