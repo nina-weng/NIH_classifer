@@ -10,7 +10,7 @@ from prediction.disease_prediction import test_func
 
 if __name__ == '__main__':
 
-    run_folder = '/work3/ninwe/run/NIH_results/disease/'
+    run_folder = '/work3/ninwe/run/NIH/disease/'
     run_config = 'resnet18-lr1e-05-ep20-pt1-aug1-GIsplit-imgs224'
     version_no = 0
     ckpts = os.listdir(run_folder+run_config+f'\\version_{version_no}\\checkpoints')
