@@ -126,7 +126,7 @@ class NIHDataModule(pl.LightningDataModule):
             if self.view_position == 'AP' or self.view_position == 'PA':
                 df_train = df_train[df_train['View Position'] == self.view_position]
                 df_valid = df_valid[df_valid['View Position'] == self.view_position]
-                df_test = df_test[df_train['View Position'] == self.view_position]
+                df_test = df_test[df_test['View Position'] == self.view_position]
 
             df_train.reset_index(inplace = True)
             df_valid.reset_index(inplace=True)
