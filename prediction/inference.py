@@ -13,10 +13,10 @@ if __name__ == '__main__':
     run_folder = '/work3/ninwe/run/NIH/disease/'
     run_config = 'resnet18-lr1e-05-ep20-pt1-aug1-GIsplit-imgs224'
     version_no = 0
-    ckpts = os.listdir(run_folder+run_config+f'\\version_{version_no}\\checkpoints')
+    ckpts = os.listdir(run_folder+run_config+f'/version_{version_no}/checkpoints')
     assert  len(ckpts) == 1
 
-    ckpt_path = run_folder+run_config+f'\\version_{version_no}\\checkpoints\\'+ckpts[0]
+    ckpt_path = run_folder+run_config+f'/version_{version_no}/checkpoints/'+ckpts[0]
 
     # get info from run_config
     model_name = run_config.split('-')[0]
