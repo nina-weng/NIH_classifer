@@ -118,12 +118,22 @@ class NIHDataModule(pl.LightningDataModule):
         self.fold_num = fold_num
 
         if self.gi_split:
-            self.df_train = pd.read_csv('../datafiles/100%_female/Fold_{}/train.csv'.format(self.fold_num),header=0)
-            self.df_valid = pd.read_csv('../datafiles/100%_female/Fold_{}/dev.csv'.format(self.fold_num), header=0)
+            df_train = pd.read_csv('../datafiles/100%_female/Fold_{}/train.csv'.format(self.fold_num),header=0)
+            df_valid = pd.read_csv('../datafiles/100%_female/Fold_{}/dev.csv'.format(self.fold_num), header=0)
             df_test_male = pd.read_csv('../datafiles/100%_female/Fold_{}/test_males.csv'.format(self.fold_num), header=0)
             df_test_female = pd.read_csv('../datafiles/100%_female/Fold_{}/test_female.csv'.format(self.fold_num), header=0)
             df_test = pd.concat([df_test_male, df_test_female])
-            df_test.reset_index(inplace = True)
+            if self.view_position == 'AP' or self.view_position == 'PA':
+                df_train = df_train[df_train['View Position'] == self.view_position]
+                df_valid = df_valid[df_valid['View Position'] == self.view_position]
+                df_test = df_test[df_train['View Position'] == self.view_position]
+
+            df_train.reset_index(inplace = True)
+            df_valid.reset_index(inplace=True)
+            df_test.reset_index(inplace=True)
+
+            self.df_train = df_test
+            self.df_valid = df_test
             self.df_test = df_test
         else:
             df_train,df_valid,df_test = self.dataset_split(self.csv_file_img)

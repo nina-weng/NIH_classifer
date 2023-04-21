@@ -48,13 +48,15 @@ if not gi_split:
                                                                       str(only_gender),
                                                           image_size[0])
 else:
-    run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-GIsplit-Fold{}-imgs{}'.format(model_choose, model_scale, lr, epochs,
-                                                                            int(pretrained),
-                                                                            int(augmentation),fold_num,
-                                                                            image_size[0])
-    view_position = 'all'  # 'AP','PA','all'
+    view_position = 'AP'  # 'AP','PA','all'
     vp_sample = False
     only_gender = None  # 'F' , 'M', None
+    run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-GIsplit-Fold{}-imgs{}'.format(model_choose, model_scale, lr, epochs,
+                                                                            int(pretrained),
+                                                                            int(augmentation),view_position,
+                                                                               fold_num,
+                                                                            image_size[0])
+
 
 if image_size[0] == 224:
     img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
