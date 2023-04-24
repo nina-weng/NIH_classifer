@@ -132,8 +132,8 @@ class NIHDataModule(pl.LightningDataModule):
             df_valid.reset_index(inplace=True)
             df_test.reset_index(inplace=True)
 
-            self.df_train = df_test
-            self.df_valid = df_test
+            self.df_train = df_train
+            self.df_valid = df_valid
             self.df_test = df_test
         else:
             df_train,df_valid,df_test = self.dataset_split(self.csv_file_img)
@@ -181,6 +181,10 @@ class NIHDataModule(pl.LightningDataModule):
             sample_rate = 0.4
             seed = 2023
             df_train = df_train.sample(frac=sample_rate, replace=False, random_state=seed)
+
+        df_train.reset_index(inplace=True)
+        df_val.reset_index(inplace=True)
+        df_test.reset_index(inplace=True)
 
         if self.save_split:
             df_train.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)), index=False)
