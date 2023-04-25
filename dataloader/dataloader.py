@@ -128,6 +128,17 @@ class NIHDataModule(pl.LightningDataModule):
                 df_valid = df_valid[df_valid['View Position'] == self.view_position]
                 df_test = df_test[df_test['View Position'] == self.view_position]
 
+                df_train.reset_index(inplace=True)
+                df_valid.reset_index(inplace=True)
+                df_test.reset_index(inplace=True)
+
+                if self.save_split:
+                    df_train.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)),
+                                    index=False)
+                    df_valid.to_csv(os.path.join(self.outdir, 'val.version_{}.csv'.format(self.version_no)), index=False)
+                    df_test.to_csv(os.path.join(self.outdir, 'test.version_{}.csv'.format(self.version_no)),
+                                   index=False)
+
             df_train.reset_index(inplace = True)
             df_valid.reset_index(inplace=True)
             df_test.reset_index(inplace=True)
