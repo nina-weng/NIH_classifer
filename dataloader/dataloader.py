@@ -104,7 +104,7 @@ class NIHDataset(Dataset):
 class NIHDataModule(pl.LightningDataModule):
     def __init__(self, img_data_dir,csv_file_img, image_size, pseudo_rgb, batch_size, num_workers,augmentation,
                  view_position='all',vp_sample=False,only_gender=None,save_split=True,outdir=None,version_no=None,
-                 gi_split=False,fold_num=0):
+                 gi_split=False,gender_setting=None,fold_num=0):
         super().__init__()
         self.img_data_dir = img_data_dir
         self.csv_file_img = csv_file_img
@@ -115,13 +115,15 @@ class NIHDataModule(pl.LightningDataModule):
         self.outdir = outdir
         self.version_no = version_no
         self.gi_split = gi_split
+        self.gender_setting = gender_setting
         self.fold_num = fold_num
 
+
         if self.gi_split:
-            df_train = pd.read_csv('../datafiles/100%_female/Fold_{}/train.csv'.format(self.fold_num),header=0)
-            df_valid = pd.read_csv('../datafiles/100%_female/Fold_{}/dev.csv'.format(self.fold_num), header=0)
-            df_test_male = pd.read_csv('../datafiles/100%_female/Fold_{}/test_males.csv'.format(self.fold_num), header=0)
-            df_test_female = pd.read_csv('../datafiles/100%_female/Fold_{}/test_female.csv'.format(self.fold_num), header=0)
+            df_train = pd.read_csv('../datafiles/{}/Fold_{}/train.csv'.format(self.gender_setting,self.fold_num),header=0)
+            df_valid = pd.read_csv('../datafiles/{}/Fold_{}/dev.csv'.format(self.gender_setting,self.fold_num), header=0)
+            df_test_male = pd.read_csv('../datafiles/{}/Fold_{}/test_males.csv'.format(self.gender_setting,self.fold_num), header=0)
+            df_test_female = pd.read_csv('../datafiles/{}/Fold_{}/test_female.csv'.format(self.gender_setting,self.fold_num), header=0)
             df_test = pd.concat([df_test_male, df_test_female])
             if self.view_position == 'AP' or self.view_position == 'PA':
                 df_train = df_train[df_train['View Position'] == self.view_position]

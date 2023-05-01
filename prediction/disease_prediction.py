@@ -23,7 +23,13 @@ image_size = (1024, 1024)
 image_size = (224, 224)
 
 # parameters that could change
-batch_size = 64
+if image_size[0] == 224:
+    batch_size = 64
+elif image_size[0] == 1024:
+    batch_size = 16
+else:
+    raise Exception('wrong image size')
+
 epochs = 20
 num_workers = 2 ###
 model_choose = 'resnet' # or 'densenet'
@@ -33,29 +39,8 @@ pretrained = True
 augmentation = True
 
 gi_split=True
-fold_num = 1
-
-if not gi_split:
-    view_position = 'AP' # 'AP','PA','all'
-    vp_sample = False
-    if vp_sample and view_position != 'all':
-        raise Exception('Could not sample the train set anymore for VP=AP/PA!')
-    only_gender = None #'F' , 'M', None
-
-
-    run_config='{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-sam{}-SEX{}-imgs{}'.format(model_choose,model_scale,lr,epochs,int(pretrained),
-                                                          int(augmentation),str(view_position),int(vp_sample),
-                                                                      str(only_gender),
-                                                          image_size[0])
-else:
-    view_position = 'AP'  # 'AP','PA','all'
-    vp_sample = False
-    only_gender = None  # 'F' , 'M', None
-    run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-GIsplit-Fold{}-imgs{}'.format(model_choose, model_scale, lr, epochs,
-                                                                            int(pretrained),
-                                                                            int(augmentation),view_position,
-                                                                               fold_num,
-                                                                            image_size[0])
+gender_setting='100%_female'  # '0%_female', '100%_female'
+fold_num = 'all'
 
 
 if image_size[0] == 224:
@@ -128,13 +113,40 @@ def embeddings(model, data_loader, device):
 
 
 
-def main(hparams):
+def main(hparams,gender_setting,fold_num):
 
 
 
     # sets seeds for numpy, torch, python.random and PYTHONHASHSEED.
     pl.seed_everything(42, workers=True)
 
+    # get run_config
+    if not gi_split:
+        view_position = 'AP'  # 'AP','PA','all'
+        vp_sample = False
+        if vp_sample and view_position != 'all':
+            raise Exception('Could not sample the train set anymore for VP=AP/PA!')
+        only_gender = None  # 'F' , 'M', None
+
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-sam{}-SEX{}-imgs{}'.format(model_choose, model_scale, lr, epochs,
+                                                                                int(pretrained),
+                                                                                int(augmentation), str(view_position),
+                                                                                int(vp_sample),
+                                                                                str(only_gender),
+                                                                                image_size[0])
+    else:
+        view_position = 'all'  # 'AP','PA','all'
+        vp_sample = False
+        only_gender = None  # 'F' , 'M', None
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-GIsplit-{}-Fold{}-imgs{}'.format(model_choose, model_scale, lr,
+                                                                                   epochs,
+                                                                                   int(pretrained),
+                                                                                   int(augmentation), view_position,
+                                                                                   gender_setting,
+                                                                                   fold_num,
+                                                                                   image_size[0])
+
+    print(run_config)
     # Create output directory
     # out_name = str(model.model_name)
     out_dir = '/work3/ninwe/run/NIH/disease/' + run_config
@@ -161,6 +173,7 @@ def main(hparams):
                          outdir=out_dir,
                          version_no=cur_version,
                          gi_split=gi_split,
+                         gender_setting=gender_setting,
                          fold_num=fold_num)
 
     # model
@@ -255,4 +268,8 @@ if __name__ == '__main__':
     parser.add_argument('--dev', default=0)
     args = parser.parse_args()
 
-    main(args)
+    if fold_num != 'all':
+        main(args,gender_setting,fold_num)
+    else:
+        for i in range(20):
+            main(args, gender_setting, i)
