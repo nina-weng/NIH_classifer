@@ -152,11 +152,12 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
                                                                                    image_size[0])
 
     if resam:
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
+                                                                                      chose_disease_str,
                                                                                       random_state,
                                                                                       image_size[0])
 

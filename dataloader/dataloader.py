@@ -282,11 +282,11 @@ class NIHDataResampleModule(pl.LightningDataModule):
         for each_gender in self.genders:
             for isDisease in [True, False]:
                 this_df = df_per_patient[(df_per_patient['Patient Gender'] == each_gender) &
-                                         (df_per_patient[self.chosen_disease] == isDisease)]
+                                         (df_per_patient[self.chose_disease] == isDisease)]
                 print('{}+{}, number of samples:{}'.format(each_gender, isDisease, len(this_df)))
 
-                N = int(self.num_per_gender * self.disease_pervalence_total[self.chosen_disease]) if isDisease else int(
-                    self.num_per_gender * (1 - self.disease_pervalence_total[self.chosen_disease]))
+                N = int(self.num_per_gender * self.disease_pervalence_total[self.chose_disease]) if isDisease else int(
+                    self.num_per_gender * (1 - self.disease_pervalence_total[self.chose_disease]))
                 print('N:{}'.format(N))
 
                 this_df = this_df.sample(n=N, random_state=self.rs)
