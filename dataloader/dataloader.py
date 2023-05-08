@@ -232,7 +232,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.num_per_gender = 13000
         self.disease_pervalence_total,self.disease_pervalence_female, self.disease_pervalence_male = self.get_prevalence()
         self.perc_train, self.perc_val, self.perc_test = 0.6,0.1,0.3
-        assert self.perc_val+self.perc_test+self.prec_train == 1
+        assert self.perc_val+self.perc_test+self.perc_train == 1
 
 
         df_train,df_valid,df_test = self.dataset_sampling()

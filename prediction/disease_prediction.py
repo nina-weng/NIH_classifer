@@ -33,7 +33,7 @@ else:
 epochs = 20
 num_workers = 2 ###
 model_choose = 'resnet' # or 'densenet'
-model_scale = '18'
+model_scale = '50'
 lr=1e-5
 pretrained = True
 augmentation = True
