@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../../NIH_classifer')
 
-from dataloader.dataloader import NIHDataset,NIHDataModule,DISEASE_LABELS
+from dataloader.dataloader import NIHDataset,NIHDataModule,DISEASE_LABELS,NIHDataResampleModule
 from prediction.models import ResNet,DenseNet
 
 
@@ -41,6 +41,11 @@ augmentation = True
 gi_split=True
 gender_setting='100%_female'  # '0%_female', '100%_female'
 fold_num = 'all'
+
+resam=True
+female_perc_in_training = 100
+chose_disease_str = 'Pneumothorax'
+random_state = 2022
 
 
 if image_size[0] == 224:
@@ -113,7 +118,7 @@ def embeddings(model, data_loader, device):
 
 
 
-def main(hparams,gender_setting,fold_num):
+def main(hparams,gender_setting=None,fold_num=None,random_state=None):
 
 
 
@@ -146,6 +151,15 @@ def main(hparams,gender_setting,fold_num):
                                                                                    fold_num,
                                                                                    image_size[0])
 
+    if resam:
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+                                                                                      epochs,
+                                                                                      int(pretrained),
+                                                                                      int(augmentation),
+                                                                                      female_perc_in_training,
+                                                                                      random_state,
+                                                                                      image_size[0])
+
     print(run_config)
     # Create output directory
     # out_name = str(model.model_name)
@@ -159,22 +173,38 @@ def main(hparams,gender_setting,fold_num):
 
 
     # data
-    data = NIHDataModule(img_data_dir=img_data_dir,
-                            csv_file_img=csv_file_img,
-                            image_size=image_size,
-                            pseudo_rgb=False,
-                            batch_size=batch_size,
-                            num_workers=num_workers,
-                            augmentation=augmentation,
-                            view_position = view_position,
-                            vp_sample = vp_sample,
-                            only_gender=only_gender,
-                         save_split=True,
-                         outdir=out_dir,
-                         version_no=cur_version,
-                         gi_split=gi_split,
-                         gender_setting=gender_setting,
-                         fold_num=fold_num)
+    if resam != True:
+        data = NIHDataModule(img_data_dir=img_data_dir,
+                                csv_file_img=csv_file_img,
+                                image_size=image_size,
+                                pseudo_rgb=False,
+                                batch_size=batch_size,
+                                num_workers=num_workers,
+                                augmentation=augmentation,
+                                view_position = view_position,
+                                vp_sample = vp_sample,
+                                only_gender=only_gender,
+                             save_split=True,
+                             outdir=out_dir,
+                             version_no=cur_version,
+                             gi_split=gi_split,
+                             gender_setting=gender_setting,
+                             fold_num=fold_num)
+    else:
+        data = NIHDataResampleModule(img_data_dir=img_data_dir,
+                                csv_file_img=csv_file_img,
+                                image_size=image_size,
+                                pseudo_rgb=False,
+                                batch_size=batch_size,
+                                num_workers=num_workers,
+                                augmentation=augmentation,
+                                outdir=out_dir,
+                                version_no=cur_version,
+                                female_perc_in_training=female_perc_in_training,
+                                chose_disease=chose_disease_str,
+                                random_state=random_state
+
+            )
 
     # model
     if model_choose == 'resnet':
@@ -268,8 +298,11 @@ if __name__ == '__main__':
     parser.add_argument('--dev', default=0)
     args = parser.parse_args()
 
-    if fold_num != 'all':
-        main(args,gender_setting,fold_num)
-    else:
-        for i in range(20):
-            main(args, gender_setting, i)
+    # if fold_num != 'all':
+    #     main(args,gender_setting=gender_setting,fold_num=fold_num)
+    # else:
+    #     for i in range(20):
+    #         main(args, gender_setting=gender_setting, fold_num=i)
+
+    for i in range(2):
+        main(args, random_state = 2023+i)
