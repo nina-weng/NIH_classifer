@@ -312,9 +312,9 @@ class NIHDataResampleModule(pl.LightningDataModule):
                 else:
                     test_set = pd.concat([test_set, this_test], axis=0)
 
-        train_set.reset_index(inplace=True)
-        val_set.reset_index(inplace=True)
-        test_set.reset_index(inplace=True)
+        train_set.reset_index(inplace=True,drop=True)
+        val_set.reset_index(inplace=True,drop=True)
+        test_set.reset_index(inplace=True,drop=True)
 
         # save splits
         train_set.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)), index=False)
