@@ -240,6 +240,8 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.df_valid = df_valid
         self.df_test = df_test
 
+        if self.df_train is None: return
+
         self.image_size = image_size
         self.batch_size = batch_size
         self.num_workers = num_workers
