@@ -29,8 +29,12 @@ class ResNet(pl.LightningModule):
         self.model.fc = nn.Linear(num_features, self.num_classes)
 
         self.lr=lr
-        self.accu_func= Accuracy(task="multilabel", num_labels=num_classes)
-        self.auroc_func = MultilabelAUROC(num_labels=num_classes,average='macro', thresholds=None)
+        if self.num_classes == 1:
+            self.accu_func = Accuracy(task="binary", num_labels=num_classes)
+            self.auroc_func = AUROC(task='binary',num_labels=num_classes, average='macro', thresholds=None)
+        elif self.num_classes >1:
+            self.accu_func= Accuracy(task="multilabel", num_labels=num_classes)
+            self.auroc_func = MultilabelAUROC(num_labels=num_classes,average='macro', thresholds=None)
 
     def remove_head(self):
         num_features = self.model.fc.in_features
