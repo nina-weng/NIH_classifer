@@ -266,13 +266,13 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
     cols_names_logits = ['logit_' + str(i) for i in range(0, num_classes)]
     cols_names_targets = ['target_' + str(i) for i in range(0, num_classes)]
 
-    print('VALIDATION')
-    preds_val, targets_val, logits_val = test_func(model, data.val_dataloader(), device)
-    df = pd.DataFrame(data=preds_val, columns=cols_names_classes)
-    df_logits = pd.DataFrame(data=logits_val, columns=cols_names_logits)
-    df_targets = pd.DataFrame(data=targets_val, columns=cols_names_targets)
-    df = pd.concat([df, df_logits, df_targets], axis=1)
-    df.to_csv(os.path.join(out_dir, 'predictions.val.version_{}.csv'.format(cur_version)), index=False)
+    # print('VALIDATION')
+    # preds_val, targets_val, logits_val = test_func(model, data.val_dataloader(), device)
+    # df = pd.DataFrame(data=preds_val, columns=cols_names_classes)
+    # df_logits = pd.DataFrame(data=logits_val, columns=cols_names_logits)
+    # df_targets = pd.DataFrame(data=targets_val, columns=cols_names_targets)
+    # df = pd.concat([df, df_logits, df_targets], axis=1)
+    # df.to_csv(os.path.join(out_dir, 'predictions.val.version_{}.csv'.format(cur_version)), index=False)
 
     print('TESTING')
     preds_test, targets_test, logits_test = test_func(model, data.test_dataloader(), device)
@@ -282,21 +282,21 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
     df = pd.concat([df, df_logits, df_targets], axis=1)
     df.to_csv(os.path.join(out_dir, 'predictions.test.version_{}.csv'.format(cur_version)), index=False)
 
-    print('EMBEDDINGS')
-
-    model.remove_head()
-
-    embeds_val, targets_val = embeddings(model, data.val_dataloader(), device)
-    df = pd.DataFrame(data=embeds_val)
-    df_targets = pd.DataFrame(data=targets_val, columns=cols_names_targets)
-    df = pd.concat([df, df_targets], axis=1)
-    df.to_csv(os.path.join(out_dir, 'embeddings.val.version_{}.csv'.format(cur_version)), index=False)
-
-    embeds_test, targets_test = embeddings(model, data.test_dataloader(), device)
-    df = pd.DataFrame(data=embeds_test)
-    df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
-    df = pd.concat([df, df_targets], axis=1)
-    df.to_csv(os.path.join(out_dir, 'embeddings.test.version_{}.csv'.format(cur_version)), index=False)
+    # print('EMBEDDINGS')
+    #
+    # model.remove_head()
+    #
+    # embeds_val, targets_val = embeddings(model, data.val_dataloader(), device)
+    # df = pd.DataFrame(data=embeds_val)
+    # df_targets = pd.DataFrame(data=targets_val, columns=cols_names_targets)
+    # df = pd.concat([df, df_targets], axis=1)
+    # df.to_csv(os.path.join(out_dir, 'embeddings.val.version_{}.csv'.format(cur_version)), index=False)
+    #
+    # embeds_test, targets_test = embeddings(model, data.test_dataloader(), device)
+    # df = pd.DataFrame(data=embeds_test)
+    # df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
+    # df = pd.concat([df, df_targets], axis=1)
+    # df.to_csv(os.path.join(out_dir, 'embeddings.test.version_{}.csv'.format(cur_version)), index=False)
 
 
 if __name__ == '__main__':
