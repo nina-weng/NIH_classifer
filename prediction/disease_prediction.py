@@ -161,6 +161,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
                                                                                       random_state,
                                                                                       image_size[0])
 
+    print('------------------------------------------\n'*3)
     print(run_config)
     # Create output directory
     # out_name = str(model.model_name)
