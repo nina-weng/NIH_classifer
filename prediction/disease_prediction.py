@@ -46,6 +46,7 @@ resam=True
 female_perc_in_training = 100
 chose_disease_str = 'Pneumothorax'
 random_state = 2022
+if resam: num_classes = 1
 
 
 if image_size[0] == 224:
