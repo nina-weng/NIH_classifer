@@ -207,7 +207,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
 
             )
 
-    if data.train_set is None:
+    if data.df_train is None:
         # end this run
         return
 
