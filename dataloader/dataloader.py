@@ -21,16 +21,19 @@ DISEASE_LABELS = ['Effusion', 'Emphysema', 'Nodule', 'Atelectasis', 'Infiltratio
                   'Consolidation', 'Fibrosis', 'Cardiomegaly', 'Pneumonia', 'Edema', 'Hernia']#, 'No Finding']
 
 class NIHDataset(Dataset):
-    def __init__(self, img_data_dir, df_data, image_size, augmentation=False, pseudo_rgb = False):
+    def __init__(self, img_data_dir, df_data, image_size, augmentation=False, pseudo_rgb = False,single_label=None):
         self.df_data = df_data
         self.image_size = image_size
         self.do_augment = augmentation
         self.pseudo_rgb = pseudo_rgb
+        self.single_label = single_label
 
 
         # self.labels = ['melanoma','nevus','basal cell carcinoma','actinic keratosis','benign keratosis','dermatofibroma',
         #   'vascular lesion','squamous cell carcinoma','others']
         self.labels=DISEASE_LABELS
+        if self.single_label is not None:
+            self.labels = [self.single_label]
 
         self.augment = T.Compose([
             T.RandomHorizontalFlip(p=0.5),
@@ -250,9 +253,12 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
 
 
-        self.train_set = NIHDataset(self.img_data_dir,self.df_train, self.image_size, augmentation=augmentation, pseudo_rgb=pseudo_rgb)
-        self.val_set = NIHDataset(self.img_data_dir,self.df_valid, self.image_size, augmentation=False, pseudo_rgb=pseudo_rgb)
-        self.test_set = NIHDataset(self.img_data_dir,self.df_test, self.image_size, augmentation=False, pseudo_rgb=pseudo_rgb)
+        self.train_set = NIHDataset(self.img_data_dir,self.df_train, self.image_size, augmentation=augmentation,
+                                    pseudo_rgb=pseudo_rgb,single_label=self.chose_disease)
+        self.val_set = NIHDataset(self.img_data_dir,self.df_valid, self.image_size, augmentation=False,
+                                  pseudo_rgb=pseudo_rgb,single_label=self.chose_disease)
+        self.test_set = NIHDataset(self.img_data_dir,self.df_test, self.image_size, augmentation=False,
+                                   pseudo_rgb=pseudo_rgb,single_label=self.chose_disease)
 
         print('#train: ', len(self.train_set))
         print('#val:   ', len(self.val_set))
