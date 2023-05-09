@@ -311,5 +311,5 @@ if __name__ == '__main__':
     #     for i in range(20):
     #         main(args, gender_setting=gender_setting, fold_num=i)
 
-    for i in range(2):
-        main(args, random_state = 2023+i)
+    for i in range(20):
+        main(args, random_state = i)
