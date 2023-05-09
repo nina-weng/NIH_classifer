@@ -207,6 +207,10 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
 
             )
 
+    if data.train_set is None:
+        # end this run
+        return
+
     # model
     if model_choose == 'resnet':
         model_type = ResNet

@@ -292,6 +292,11 @@ class NIHDataResampleModule(pl.LightningDataModule):
                     self.num_per_gender * (1 - p))
                 print('N:{}'.format(N))
 
+                if N > len(this_df):
+                    # not enough samples for keeping the same amount of data per resampling
+                    print('random state {} does not provide with enough disease-labeled samples'.format(self.rs))
+                    return None,None,None
+
                 this_df = this_df.sample(n=N, random_state=self.rs)
                 this_train, this_val, this_test = self.set_split(this_df, self.perc_train,self.perc_val,self.perc_test, self.rs)
 
