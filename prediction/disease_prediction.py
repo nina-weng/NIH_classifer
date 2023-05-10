@@ -43,7 +43,7 @@ gender_setting='100%_female'  # '0%_female', '100%_female'
 fold_num = 'all'
 
 resam=True
-female_perc_in_training = 100
+female_perc_in_training = 0
 chose_disease_str = 'Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1

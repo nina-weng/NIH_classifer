@@ -314,9 +314,9 @@ class NIHDataResampleModule(pl.LightningDataModule):
                     N_train_half = int(N_train/2)
                     this_train = this_train.sample(n=N_train_half, random_state=self.rs)
                     # val should keep the same as train
-                    # N_val = len(this_val)
-                    # N_val_half = int(N_val/2)
-                    # this_val = this_val.sample(n=N_val_half,random_state=self.rs)
+                    N_val = len(this_val)
+                    N_val_half = int(N_val/2)
+                    this_val = this_val.sample(n=N_val_half,random_state=self.rs)
 
                 if each_gender == self.female and self.female_perc_in_training != 0:
                     if train_set is None:
@@ -324,25 +324,21 @@ class NIHDataResampleModule(pl.LightningDataModule):
                     else:
                         train_set = pd.concat([train_set, this_train], axis=0)
                     # val should keep the same as train
-                    # if val_set is None:
-                    #     val_set = this_val
-                    # else:
-                    #     val_set = pd.concat([val_set, this_val], axis=0)
+                    if val_set is None:
+                        val_set = this_val
+                    else:
+                        val_set = pd.concat([val_set, this_val], axis=0)
 
                 if each_gender == self.male and self.female_perc_in_training != 100:
                     if train_set is None:
                         train_set = this_train
                     else:
                         train_set = pd.concat([train_set, this_train], axis=0)
-                    # if val_set is None:
-                    #     val_set = this_val
-                    # else:
-                    #     val_set = pd.concat([val_set, this_val], axis=0)
+                    if val_set is None:
+                        val_set = this_val
+                    else:
+                        val_set = pd.concat([val_set, this_val], axis=0)
 
-                if val_set is None:
-                    val_set = this_val
-                else:
-                    val_set = pd.concat([val_set, this_val], axis=0)
 
                 # test set is not influenced by training settingsS
                 if test_set is None:
