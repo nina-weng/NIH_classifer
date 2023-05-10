@@ -243,7 +243,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
     # train
     trainer = pl.Trainer(
         # callbacks=[checkpoint_callback],
-        callbacks=[EarlyStopping(monitor="val_loss", mode="min",patience=5)],
+        callbacks=[EarlyStopping(monitor="val_loss", mode="min",patience=3)],
         log_every_n_steps = 1,
         max_epochs=epochs,
         gpus=hparams.gpus,
