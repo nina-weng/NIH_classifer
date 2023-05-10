@@ -308,6 +308,12 @@ class NIHDataResampleModule(pl.LightningDataModule):
                 this_df = this_df.sample(n=N, random_state=self.rs)
                 this_train, this_val, this_test = self.set_split(this_df, self.perc_train,self.perc_val,self.perc_test, self.rs)
 
+                # keep the training set same amount of samples for female_perc_in_training = [0,50,100]
+                if self.female_perc_in_training == 50:
+                    N_train=len(this_train)
+                    N_train_half = int(N_train/2)
+                    this_train = this_train.sample(n=N_train_half, random_state=self.rs)
+
                 if each_gender == self.female and self.female_perc_in_training != 0:
                     if train_set is None:
                         train_set = this_train
