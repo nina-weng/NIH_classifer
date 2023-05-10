@@ -166,7 +166,8 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
     print(run_config)
     # Create output directory
     # out_name = str(model.model_name)
-    out_dir = '/work3/ninwe/run/NIH/disease/' + run_config
+    run_dir = '/work3/ninwe/run/NIH/disease/'
+    out_dir = run_dir + run_config
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -247,7 +248,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
         max_epochs=epochs,
         gpus=hparams.gpus,
         accelerator="auto",
-        logger=TensorBoardLogger(out_dir, name=run_config,version=cur_version),
+        logger=TensorBoardLogger(run_dir, name=run_config,version=cur_version),
     )
     trainer.logger._default_hp_metric = False
     trainer.fit(model, data)
