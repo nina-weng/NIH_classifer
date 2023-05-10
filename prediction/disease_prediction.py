@@ -153,7 +153,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
                                                                                    image_size[0])
 
     if resam:
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}_newval'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
@@ -247,7 +247,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
         max_epochs=epochs,
         gpus=hparams.gpus,
         accelerator="auto",
-        logger=TensorBoardLogger('/work3/ninwe/run/NIH/disease/', name=run_config,version=cur_version),
+        logger=TensorBoardLogger(out_dir, name=run_config,version=cur_version),
     )
     trainer.logger._default_hp_metric = False
     trainer.fit(model, data)
