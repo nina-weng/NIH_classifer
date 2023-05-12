@@ -17,6 +17,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from skimage.io import imsave
 from tqdm import tqdm
 from argparse import ArgumentParser
+import shutil
 
 num_classes = len(DISEASE_LABELS)
 image_size = (1024, 1024)
@@ -44,9 +45,10 @@ fold_num = 'all'
 
 resam=True
 female_perc_in_training = 0
-chose_disease_str = 'Pneumothorax'
+chose_disease_str = 'Pneumonia' #'Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
+save_model_para = False
 
 
 if image_size[0] == 224:
@@ -153,7 +155,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
                                                                                    image_size[0])
 
     if resam:
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}_newval'.format(model_choose, model_scale, lr,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
@@ -298,6 +300,13 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
     # df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
     # df = pd.concat([df, df_targets], axis=1)
     # df.to_csv(os.path.join(out_dir, 'embeddings.test.version_{}.csv'.format(cur_version)), index=False)
+
+    # delete the model parameters
+
+    if save_model_para == False:
+        model_para_dir = os.path.join(out_dir,run_config,'version_{}'.format(cur_version))
+        shutil.rmtree(model_para_dir)
+
 
 
 if __name__ == '__main__':
