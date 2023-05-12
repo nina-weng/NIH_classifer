@@ -45,7 +45,7 @@ fold_num = 'all'
 
 resam=True
 female_perc_in_training = 0
-chose_disease_str = 'Pneumonia' #'Pneumothorax'
+chose_disease_str =  'Pneumothorax' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
 save_model_para = False
@@ -155,7 +155,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
                                                                                    image_size[0])
 
     if resam:
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}_gencheck'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
@@ -285,6 +285,32 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
     df = pd.concat([df, df_logits, df_targets], axis=1)
     df.to_csv(os.path.join(out_dir, 'predictions.test.version_{}.csv'.format(cur_version)), index=False)
 
+    print('TESTING on tain set')
+    if resam:
+        data = NIHDataResampleModule(img_data_dir=img_data_dir,
+                                     csv_file_img=csv_file_img,
+                                     image_size=image_size,
+                                     pseudo_rgb=False,
+                                     batch_size=batch_size,
+                                     num_workers=num_workers,
+                                     augmentation=augmentation,
+                                     outdir=out_dir,
+                                     version_no=cur_version,
+                                     female_perc_in_training=female_perc_in_training,
+                                     chose_disease=chose_disease_str,
+                                     random_state=random_state,
+                                     shuffle=False
+
+                                     )
+
+
+        preds_test, targets_test, logits_test = test_func(model, data.train_dataloader(), device)
+        df = pd.DataFrame(data=preds_test, columns=cols_names_classes)
+        df_logits = pd.DataFrame(data=logits_test, columns=cols_names_logits)
+        df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
+        df = pd.concat([df, df_logits, df_targets], axis=1)
+        df.to_csv(os.path.join(out_dir, 'predictions.train.version_{}.csv'.format(cur_version)), index=False)
+
     # print('EMBEDDINGS')
     #
     # model.remove_head()
@@ -304,7 +330,7 @@ def main(hparams,gender_setting=None,fold_num=None,random_state=None):
     # delete the model parameters
 
     if save_model_para == False:
-        model_para_dir = os.path.join(out_dir,run_config,'version_{}'.format(cur_version))
+        model_para_dir = os.path.join(out_dir,'version_{}'.format(cur_version))
         shutil.rmtree(model_para_dir)
 
 

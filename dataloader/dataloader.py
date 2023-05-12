@@ -215,7 +215,8 @@ class NIHDataResampleModule(pl.LightningDataModule):
                  outdir,version_no,
                  female_perc_in_training = None,
                  chose_disease='No Finding',
-                 random_state=None):
+                 random_state=None,
+                 shuffle=True):
         super().__init__()
         self.img_data_dir = img_data_dir
         self.csv_file_img = csv_file_img
@@ -230,6 +231,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.rs = random_state
         self.male, self.female = 'M', 'F'
         self.genders = [self.female, self.male]
+        self.shuffle = shuffle
 
         # pre-defined parameter
         self.num_per_gender = 13000
@@ -265,7 +267,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         print('#test:  ', len(self.test_set))
 
     def train_dataloader(self):
-        return DataLoader(self.train_set, self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(self.train_set, self.batch_size, shuffle=self.shuffle, num_workers=self.num_workers)
 
     def val_dataloader(self):
         return DataLoader(self.val_set, self.batch_size, shuffle=False, num_workers=self.num_workers)
