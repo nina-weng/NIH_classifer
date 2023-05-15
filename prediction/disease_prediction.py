@@ -50,6 +50,7 @@ chose_disease_str =  'Pneumothorax' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
 save_model_para = True
+loss_func_type='WeightedBCE'
 
 
 if image_size[0] == 224:
@@ -259,6 +260,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
     model = model_type.load_from_checkpoint(trainer.checkpoint_callback.best_model_path,
                                             num_classes=num_classes,lr=lr,pretrained=pretrained,
                                             model_scale=model_scale,
+                                            loss_func_type=loss_func_type
                                             )
 
     use_cuda = torch.cuda.is_available()

@@ -9,12 +9,13 @@ from torchmetrics.classification import MultilabelAUROC
 
 
 class ResNet(pl.LightningModule):
-    def __init__(self, num_classes,lr,pretrained,model_scale):
+    def __init__(self, num_classes,lr,pretrained,model_scale,loss_func_type='BCE'):
         super().__init__()
         self.model_name = 'resnet'
         self.num_classes = num_classes
         self.pretrained=pretrained
         self.model_scale = model_scale
+        self.loss_func_type= loss_func_type
         if self.model_scale == '18':
             self.model = models.resnet18(pretrained=self.pretrained)
         elif self.model_scale == '34':
@@ -29,6 +30,17 @@ class ResNet(pl.LightningModule):
         self.model.fc = nn.Linear(num_features, self.num_classes)
 
         self.lr=lr
+        if self.loss_func_type == 'BCE':
+            self.loss_func = F.binary_cross_entropy()
+        elif self.loss_func_type == 'WeightedBCE':
+            pos_weight = torch.tensor([1.0])
+            neg_weight = torch.tensor([0.1])
+
+            # Define the loss function with weighted binary cross-entropy
+            self.loss_func = nn.BCEWithLogitsLoss(pos_weight=pos_weight, neg_weight=neg_weight)
+        else:
+            raise Exception('Not implemented loss function type : {}'.format(self.loss_func_type))
+
         if self.num_classes == 1:
             self.accu_func = Accuracy(task="binary", num_labels=num_classes)
             self.auroc_func = AUROC(task='binary',num_labels=num_classes, average='macro', thresholds=None)
@@ -59,7 +71,7 @@ class ResNet(pl.LightningModule):
         img, lab = self.unpack_batch(batch)
         out = self.forward(img)
         prob = torch.sigmoid(out)
-        loss = F.binary_cross_entropy(prob, lab)
+        loss = self.loss_func(prob, lab)
 
         multi_accu = self.accu_func(prob, lab)
         multi_auroc = self.auroc_func(prob,lab.long())
