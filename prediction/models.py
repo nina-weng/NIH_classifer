@@ -34,7 +34,7 @@ class ResNet(pl.LightningModule):
             # self.loss_func = F.binary_cross_entropy
             self.loss_func = nn.BCELoss()
         elif self.loss_func_type == 'WeightedBCE':
-            pos_weight = 10
+            pos_weight = torch.tensor([10.0])
 
             # Define the loss function with weighted binary cross-entropy
             self.loss_func = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
