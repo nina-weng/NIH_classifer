@@ -50,7 +50,7 @@ chose_disease_str =  'Pneumothorax' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
 save_model_para = True
-loss_func_type='WeightedBCE'
+loss_func_type='BCE'
 
 
 if image_size[0] == 224:
@@ -157,14 +157,13 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                    image_size[0])
 
     if resam:
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
                                                                                       random_state,
-                                                                                      loss_func_type,
                                                                                       image_size[0])
 
     print('------------------------------------------\n'*3)
