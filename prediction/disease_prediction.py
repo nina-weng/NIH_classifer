@@ -224,7 +224,8 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
         model_type = ResNet
     elif model_choose == 'densenet':
         model_type = DenseNet
-    model = model_type(num_classes=num_classes,lr=lr,pretrained=pretrained,model_scale=model_scale)
+    model = model_type(num_classes=num_classes,lr=lr,pretrained=pretrained,model_scale=model_scale,
+                       loss_func_type = loss_func_type)
 
     temp_dir = os.path.join(out_dir, 'temp_version_{}'.format(cur_version))
     if not os.path.exists(temp_dir):
