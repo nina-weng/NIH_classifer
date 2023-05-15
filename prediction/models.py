@@ -63,7 +63,8 @@ class ResNet(pl.LightningModule):
 
         multi_accu = self.accu_func(prob, lab)
         multi_auroc = self.auroc_func(prob,lab.long())
-        print('multi_auroc:{.4f}'.format(multi_auroc))
+        print(prob.shape,lab.shape,lab.long().shape)
+        print('multi_auroc:{:.4f}'.format(multi_auroc))
         return loss,multi_accu,multi_auroc
 
     def training_step(self, batch, batch_idx):
