@@ -45,7 +45,7 @@ fold_num = 'all'
 
 resam=True
 female_perc_in_training_set = [0]#
-random_state_set = np.arange(0,5)
+random_state_set = np.arange(0,1)
 chose_disease_str =  'Pneumothorax' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
