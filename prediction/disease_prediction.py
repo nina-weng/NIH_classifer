@@ -44,11 +44,12 @@ gender_setting='100%_female'  # '0%_female', '100%_female'
 fold_num = 'all'
 
 resam=True
-female_perc_in_training = None#
-chose_disease_str =  'Consolidation' #'Pneumonia','Pneumothorax'
+female_perc_in_training_set = [0]#
+random_state_set = np.arange(0,5)
+chose_disease_str =  'Pneumothorax' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
-save_model_para = False
+save_model_para = True
 
 
 if image_size[0] == 224:
@@ -286,7 +287,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
     df.to_csv(os.path.join(out_dir, 'predictions.test.version_{}.csv'.format(cur_version)), index=False)
 
 
-    if (False and resam):
+    if (True and resam):
         print('TESTING on tain set')
         data = NIHDataResampleModule(img_data_dir=img_data_dir,
                                      csv_file_img=csv_file_img,
@@ -347,6 +348,6 @@ if __name__ == '__main__':
     # else:
     #     for i in range(20):
     #         main(args, gender_setting=gender_setting, fold_num=i)
-    for female_perc_in_training in [0,50,100]:
-        for i in range(20):
+    for female_perc_in_training in female_perc_in_training_set:
+        for i in random_state_set:
             main(args, female_perc_in_training=female_perc_in_training,random_state = i)
