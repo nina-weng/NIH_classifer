@@ -157,13 +157,14 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                    image_size[0])
 
     if resam:
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}_gencheck'.format(model_choose, model_scale, lr,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
                                                                                       random_state,
+                                                                                      loss_func_type,
                                                                                       image_size[0])
 
     print('------------------------------------------\n'*3)
