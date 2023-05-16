@@ -99,7 +99,7 @@ def main():
                                      random_state=rs_chose)
 
     img_data_dir = '/work3/ninwe/dataset/'
-    csv_file_img = '../datafiles/chexpert/' + 'chexpert.sample.csv'
+    csv_file_img = '../datafiles/' + 'chexpert.sample.csv'
     out_dir_chexpert= out_dir + '/chexpert_datasplit/'
     if not os.path.exists(out_dir_chexpert):
         os.makedirs(out_dir_chexpert)
