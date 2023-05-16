@@ -59,10 +59,10 @@ def main():
 
     rs_chose = 0
 
-    ckpt_dir_NIH = run_dir_NIH + '\\' + run_config_NIH[rs_chose] + '\\version_0\\checkpoints\\'
+    ckpt_dir_NIH = run_dir_NIH + '/' + run_config_NIH[rs_chose] + '/version_0/checkpoints/'
     NIH_model = load_model('NIH',ckpt_dir_NIH)
 
-    ckpt_dir_chexpert = run_dir_chexpert + '\\' + run_config_chexpert[rs_chose] + '\\version_0\\checkpoints\\'
+    ckpt_dir_chexpert = run_dir_chexpert + '/' + run_config_chexpert[rs_chose] + '/version_0/checkpoints/'
     chexpert_model = load_model('chexpert', ckpt_dir_chexpert)
 
     img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
