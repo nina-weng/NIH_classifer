@@ -66,7 +66,7 @@ def main():
     chexpert_model = load_model('chexpert', ckpt_dir_chexpert)
 
     img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
-    csv_file_img = None
+    csv_file_img = '../datafiles/'+'Data_Entry_2017_v2020_clean_split.csv'
     image_size=(224,224)
     batch_size=64
     num_workers=1
