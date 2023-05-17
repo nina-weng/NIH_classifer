@@ -46,11 +46,11 @@ fold_num = 'all'
 resam=True
 female_perc_in_training_set = [0,50,100]#
 random_state_set = np.arange(0,1)
-chose_disease_str =  'Pneumonia' #'Pneumonia','Pneumothorax'
+chose_disease_str =  'Effusion' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
-print('multi label training')
-num_classes = len(DISEASE_LABELS)
+# print('multi label training')
+# num_classes = len(DISEASE_LABELS)
 isMultilabel = True if num_classes!=1 else False
 
 save_model_para = True
@@ -322,7 +322,8 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                      female_perc_in_training=female_perc_in_training,
                                      chose_disease=chose_disease_str,
                                      random_state=random_state,
-                                     shuffle=False
+                                     shuffle=False,
+                                     num_classes=num_classes
 
                                      )
 
