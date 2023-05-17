@@ -31,11 +31,11 @@ elif image_size[0] == 1024:
 else:
     raise Exception('wrong image size')
 
-epochs = 20
+epochs = 50
 num_workers = 2 ###
 model_choose = 'resnet' # or 'densenet'
 model_scale = '50'
-lr=5e-5
+lr=5e-7
 pretrained = True
 augmentation = True
 

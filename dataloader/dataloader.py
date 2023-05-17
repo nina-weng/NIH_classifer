@@ -31,9 +31,13 @@ class NIHDataset(Dataset):
 
         # self.labels = ['melanoma','nevus','basal cell carcinoma','actinic keratosis','benign keratosis','dermatofibroma',
         #   'vascular lesion','squamous cell carcinoma','others']
-        self.labels=DISEASE_LABELS
+
         if self.single_label is not None:
             self.labels = [self.single_label]
+        else:
+            self.labels = DISEASE_LABELS
+
+        print(self.labels)
 
         self.augment = T.Compose([
             T.RandomHorizontalFlip(p=0.5),
