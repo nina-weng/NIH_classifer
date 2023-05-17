@@ -46,9 +46,11 @@ fold_num = 'all'
 resam=True
 female_perc_in_training_set = [0,50,100]#
 random_state_set = np.arange(0,1)
-chose_disease_str =  'Pneumonia' #'Pneumonia','Pneumothorax'
+chose_disease_str =  'Efussion' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
+print('multi label training')
+num_classes = len(DISEASE_LABELS)
 save_model_para = False
 loss_func_type='WeightedBCE'
 
