@@ -53,8 +53,8 @@ print('multi label training')
 num_classes = len(DISEASE_LABELS)
 isMultilabel = True if num_classes!=1 else False
 
-save_model_para = False
-loss_func_type='WeightedBCE'
+save_model_para = True
+loss_func_type='BCE'
 
 
 if image_size[0] == 224:
@@ -168,7 +168,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
-                                                                                      isMultilabel,
+                                                                                      int(isMultilabel),
                                                                                       random_state,
                                                                                       image_size[0])
         else:
@@ -178,7 +178,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
-                                                                                      isMultilabel,
+                                                                                      int(isMultilabel),
                                                                                       random_state,
                                                                                       loss_func_type,
                                                                                       image_size[0])
