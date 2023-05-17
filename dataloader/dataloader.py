@@ -216,6 +216,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
                  female_perc_in_training = None,
                  chose_disease='No Finding',
                  random_state=None,
+                 num_classes=None,
                  shuffle=True):
         super().__init__()
         self.img_data_dir = img_data_dir
@@ -238,6 +239,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.disease_pervalence_total,self.disease_pervalence_female, self.disease_pervalence_male = self.get_prevalence()
         self.perc_train, self.perc_val, self.perc_test = 0.6,0.1,0.3
         assert self.perc_val+self.perc_test+self.perc_train == 1
+        self.num_classes = num_classes
 
 
         df_train,df_valid,df_test = self.dataset_sampling()
@@ -253,14 +255,18 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.augmentation=augmentation
 
 
+        if num_classes == 1:
+            single_label = self.chose_disease
+        else:
+            single_label = None
 
 
         self.train_set = NIHDataset(self.img_data_dir,self.df_train, self.image_size, augmentation=augmentation,
-                                    pseudo_rgb=pseudo_rgb,single_label=self.chose_disease)
+                                    pseudo_rgb=pseudo_rgb,single_label=single_label)
         self.val_set = NIHDataset(self.img_data_dir,self.df_valid, self.image_size, augmentation=False,
-                                  pseudo_rgb=pseudo_rgb,single_label=self.chose_disease)
+                                  pseudo_rgb=pseudo_rgb,single_label=single_label)
         self.test_set = NIHDataset(self.img_data_dir,self.df_test, self.image_size, augmentation=False,
-                                   pseudo_rgb=pseudo_rgb,single_label=self.chose_disease)
+                                   pseudo_rgb=pseudo_rgb,single_label=single_label)
 
         print('#train: ', len(self.train_set))
         print('#val:   ', len(self.val_set))
