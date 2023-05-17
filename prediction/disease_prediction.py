@@ -51,6 +51,8 @@ random_state = 2022
 if resam: num_classes = 1
 print('multi label training')
 num_classes = len(DISEASE_LABELS)
+isMultilabel = True if num_classes!=1 else False
+
 save_model_para = False
 loss_func_type='WeightedBCE'
 
@@ -160,23 +162,25 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
 
     if resam:
         if loss_func_type == 'BCE':
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-ml{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
+                                                                                      isMultilabel,
                                                                                       random_state,
                                                                                       image_size[0])
         else:
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-ml{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
+                                                                                      isMultilabel,
                                                                                       random_state,
-                                                                                             loss_func_type,
+                                                                                      loss_func_type,
                                                                                       image_size[0])
 
     print('------------------------------------------\n'*3)
