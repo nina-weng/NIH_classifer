@@ -35,7 +35,7 @@ epochs = 20
 num_workers = 2 ###
 model_choose = 'resnet' # or 'densenet'
 model_scale = '50'
-lr=1e-6
+lr=5e-5
 pretrained = True
 augmentation = True
 
@@ -45,12 +45,12 @@ fold_num = 'all'
 
 resam=True
 female_perc_in_training_set = [0,50,100]#
-random_state_set = np.arange(0,20)
-chose_disease_str =  'Hernia' #'Pneumonia','Pneumothorax'
+random_state_set = np.arange(0,1)
+chose_disease_str =  'Pneumonia' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
 save_model_para = False
-loss_func_type='BCE'
+loss_func_type='WeightedBCE'
 
 
 if image_size[0] == 224:
@@ -157,13 +157,24 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                    image_size[0])
 
     if resam:
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+        if loss_func_type == 'BCE':
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
                                                                                       random_state,
+                                                                                      image_size[0])
+        else:
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
+                                                                                      epochs,
+                                                                                      int(pretrained),
+                                                                                      int(augmentation),
+                                                                                      female_perc_in_training,
+                                                                                      chose_disease_str,
+                                                                                      random_state,
+                                                                                             loss_func_type,
                                                                                       image_size[0])
 
     print('------------------------------------------\n'*3)
@@ -273,13 +284,13 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
     cols_names_logits = ['logit_' + str(i) for i in range(0, num_classes)]
     cols_names_targets = ['target_' + str(i) for i in range(0, num_classes)]
 
-    # print('VALIDATION')
-    # preds_val, targets_val, logits_val = test_func(model, data.val_dataloader(), device)
-    # df = pd.DataFrame(data=preds_val, columns=cols_names_classes)
-    # df_logits = pd.DataFrame(data=logits_val, columns=cols_names_logits)
-    # df_targets = pd.DataFrame(data=targets_val, columns=cols_names_targets)
-    # df = pd.concat([df, df_logits, df_targets], axis=1)
-    # df.to_csv(os.path.join(out_dir, 'predictions.val.version_{}.csv'.format(cur_version)), index=False)
+    print('VALIDATION')
+    preds_val, targets_val, logits_val = test_func(model, data.val_dataloader(), device)
+    df = pd.DataFrame(data=preds_val, columns=cols_names_classes)
+    df_logits = pd.DataFrame(data=logits_val, columns=cols_names_logits)
+    df_targets = pd.DataFrame(data=targets_val, columns=cols_names_targets)
+    df = pd.concat([df, df_logits, df_targets], axis=1)
+    df.to_csv(os.path.join(out_dir, 'predictions.val.version_{}.csv'.format(cur_version)), index=False)
 
     print('TESTING')
     preds_test, targets_test, logits_test = test_func(model, data.test_dataloader(), device)
@@ -290,7 +301,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
     df.to_csv(os.path.join(out_dir, 'predictions.test.version_{}.csv'.format(cur_version)), index=False)
 
 
-    if (False and resam):
+    if (True and resam):
         print('TESTING on tain set')
         data = NIHDataResampleModule(img_data_dir=img_data_dir,
                                      csv_file_img=csv_file_img,
