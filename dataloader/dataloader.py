@@ -246,7 +246,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.perc_train, self.perc_val, self.perc_test = 0.6,0.1,0.3
         assert self.perc_val+self.perc_test+self.perc_train == 1
         self.num_classes = num_classes
-        self.male, self.female = 'Male', 'Female'
+        self.male, self.female = 'M', 'F'
         self.genders = [self.female, self.male]
         self.col_name_patient_id = 'Patient ID'
         self.col_name_gender = 'Patient Gender'
@@ -346,10 +346,10 @@ class NIHDataResampleModule(pl.LightningDataModule):
         for each_gender in self.genders:
             for isDisease in [True, False]:
                 if isDisease:
-                    subgroup_patients = patient_info_df[(patient_info_df[self.col_name_gender ]== each_gender) & \
+                    subgroup_patients = patient_info_df[(patient_info_df[self.col_name_gender ]== each_gender) &
                                                     (patient_info_df['averaged_disease_label']>0)]
                 else:
-                    subgroup_patients = patient_info_df[(patient_info_df[self.col_name_gender] == each_gender) & \
+                    subgroup_patients = patient_info_df[(patient_info_df[self.col_name_gender] == each_gender) &
                                                         (patient_info_df['averaged_disease_label'] == 0)]
 
                 print('gender:{}\tisDisease{}\t{}'.format(each_gender,isDisease,len(subgroup_patients)))
