@@ -374,7 +374,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
                 this_train = sampled_df[sampled_df[self.col_name_patient_id].isin(train_pid_list)]
                 this_val = sampled_this_pid[sampled_df[self.col_name_patient_id].isin(val_pid_list)]
-                this_test = sampled_this_pid[sampled_df[self.col_name_patient_id].isin(val_pid_list)]
+                this_test = sampled_this_pid[sampled_df[self.col_name_patient_id].isin(test_pid_list)]
 
                 if each_gender == self.female and self.female_perc_in_training != 0:
                     if train_set is None:
@@ -407,6 +407,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         train_set.reset_index(inplace=True,drop=True)
         val_set.reset_index(inplace=True,drop=True)
         test_set.reset_index(inplace=True,drop=True)
+
 
         # save splits
         train_set.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)), index=False)
