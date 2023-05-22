@@ -242,7 +242,12 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
         # pre-defined parameter
         self.num_per_gender = 13000
-        self.disease_pervalence_total,self.disease_pervalence_female, self.disease_pervalence_male = self.get_prevalence()
+        self.disease_prevalence_total,self.disease_prevalence_female, self.disease_prevalence_male = self.get_prevalence()
+
+        # patient wise
+        self.num_per_gender_pw = 14100 # min(num_female_subject, num_male_subject), round to 100
+        self.disease_prevalence_total_pw, self.disease_prevalence_female_pw, self.disease_prevalence_male_pw = self.get_prevalence_patientwise()
+
         self.perc_train, self.perc_val, self.perc_test = 0.6,0.1,0.3
         assert self.perc_val+self.perc_test+self.perc_train == 1
         self.num_classes = num_classes
@@ -360,12 +365,21 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
                 print('gender:{}\tisDisease{}\t{}'.format(each_gender,isDisease,len(subgroup_patients)))
 
-                this_train_pid, this_val_pid, this_test_pid= self.set_split(subgroup_patients,self.perc_train,self.perc_val,self.perc_test,
-                                                   self.rs)
+                p = self.disease_prevalence_female_pw[self.chose_disease] if each_gender == self.female else \
+                    self.disease_prevalence_male_pw[self.chose_disease]
+
+                N = int(self.num_per_gender_pw * p) if isDisease else int(
+                    self.num_per_gender_pw * (1 - p))
+                print('N:{}'.format(N))
+
+                subgroup_patients = subgroup_patients.sample(n=N, random_state=self.rs)
+
+                this_train_pid, this_val_pid, this_test_pid = self.set_split(subgroup_patients, self.perc_train,
+                                                                             self.perc_val, self.perc_test,
+                                                                             self.rs)
                 train_pid_list = this_train_pid['pid'].to_list()
                 val_pid_list = this_val_pid['pid'].to_list()
                 test_pid_list = this_test_pid['pid'].to_list()
-
 
                 # keep the training set same amount of samples for female_perc_in_training = [0,50,100]
                 if self.female_perc_in_training == 50:
@@ -445,8 +459,8 @@ class NIHDataResampleModule(pl.LightningDataModule):
                                          (df_per_patient[self.chose_disease] == isDisease)]
                 print('{}+{}, number of samples:{}'.format(each_gender, isDisease, len(this_df)))
 
-                p = self.disease_pervalence_female[self.chose_disease] if each_gender == self.female else \
-                    self.disease_pervalence_male[self.chose_disease]
+                p = self.disease_prevalence_female[self.chose_disease] if each_gender == self.female else \
+                    self.disease_prevalence_male[self.chose_disease]
 
                 N = int(self.num_per_gender * p) if isDisease else int(
                     self.num_per_gender * (1 - p))
@@ -532,6 +546,39 @@ class NIHDataResampleModule(pl.LightningDataModule):
         dict_per_patient_gender_p_male = {}
         for i, each_l in enumerate(DISEASE_LABELS): dict_per_patient_gender_p_male[each_l] = df_per_patient_gender_p_male[i]
 
+        print('Disease prevalence total: {}'.format(dict_per_patient_p))
+        print('Disease prevalence Female: {}'.format(dict_per_patient_gender_p_female))
+        print('Disease prevalence Male: {}'.format(dict_per_patient_gender_p_male))
+
+        return dict_per_patient_p,dict_per_patient_gender_p_female,dict_per_patient_gender_p_male
+
+    def get_prevalence_patientwise(self):
+        df = pd.read_csv(self.csv_file_img, header=0)
+
+        df_per_patient = df.groupby([self.col_name_patient_id, self.col_name_gender]).mean()
+        for each_labels in DISEASE_LABELS:
+            df_per_patient[each_labels] = df_per_patient[each_labels].apply(lambda x: 1 if x > 0 else 0)
+
+        df_per_patient_p = df_per_patient.mean()[DISEASE_LABELS].to_list()
+
+        df_per_patient_gender_p = df_per_patient.groupby([self.col_name_gender]).mean()[DISEASE_LABELS]
+        df_per_patient_gender_p_male = df_per_patient_gender_p.loc[self.male].to_list()
+        df_per_patient_gender_p_female = df_per_patient_gender_p.loc[self.female].to_list()
+
+        assert len(df_per_patient_gender_p_female) == len(DISEASE_LABELS)
+        assert len(df_per_patient_gender_p_male) == len(DISEASE_LABELS)
+        assert len(df_per_patient_p) == len(DISEASE_LABELS)
+
+        dict_per_patient_p = {}
+        for i,each_l in enumerate(DISEASE_LABELS): dict_per_patient_p[each_l] = df_per_patient_p[i]
+
+        dict_per_patient_gender_p_female = {}
+        for i, each_l in enumerate(DISEASE_LABELS): dict_per_patient_gender_p_female[each_l] = df_per_patient_gender_p_female[i]
+
+        dict_per_patient_gender_p_male = {}
+        for i, each_l in enumerate(DISEASE_LABELS): dict_per_patient_gender_p_male[each_l] = df_per_patient_gender_p_male[i]
+
+        print('PATIENT WISE disease prevalence')
         print('Disease prevalence total: {}'.format(dict_per_patient_p))
         print('Disease prevalence Female: {}'.format(dict_per_patient_gender_p_female))
         print('Disease prevalence Male: {}'.format(dict_per_patient_gender_p_male))
