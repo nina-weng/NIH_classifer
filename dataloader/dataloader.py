@@ -11,6 +11,7 @@ from skimage.io import imread
 from PIL import Image
 from tqdm import tqdm
 import os
+import random
 
 
 
@@ -369,11 +370,15 @@ class NIHDataResampleModule(pl.LightningDataModule):
                     # when sampling for 50% female/male, sampled based on pid instead of samples
                     N_train_patient=len(train_pid_list)
                     N_train_patient_half = int(N_train_patient/2)
-                    train_pid_list = train_pid_list.sample(n=N_train_patient_half, random_state=self.rs)
+                    random.seed(self.rs)
+                    train_pid_list = random.sample(train_pid_list,k=N_train_patient_half)
+                    # train_pid_list = train_pid_list.sample(n=N_train_patient_half, random_state=self.rs)
                     # val should keep the same as train
                     N_val_patient = len(val_pid_list)
                     N_val_patient_half = int(N_val_patient/2)
-                    val_pid_list = val_pid_list.sample(n=N_val_patient_half,random_state=self.rs)
+                    random.seed(self.rs)
+                    val_pid_list = random.sample(val_pid_list, k=N_val_patient_half)
+                    # val_pid_list = val_pid_list.sample(n=N_val_patient_half,random_state=self.rs)
 
                 this_train = sampled_df[sampled_df[self.col_name_patient_id].isin(train_pid_list)]
                 this_val = sampled_df[sampled_df[self.col_name_patient_id].isin(val_pid_list)]
