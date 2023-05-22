@@ -223,7 +223,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
                  random_state=None,
                  num_classes=None,
                  num_per_patient =1, # int or None, None means no sampling
-                 shuffle=True):
+                 ):
         super().__init__()
         self.img_data_dir = img_data_dir
         self.csv_file_img = csv_file_img
@@ -236,7 +236,6 @@ class NIHDataResampleModule(pl.LightningDataModule):
         assert self.female_perc_in_training in [0,50,100], 'Not implemented female_perc_in_training: {}'.format(self.female_perc_in_training)
         self.chose_disease = chose_disease # str, one of the labels
         self.rs = random_state
-        self.shuffle = shuffle
         self.num_per_patient= num_per_patient
         if self.num_per_patient is not None:
             assert self.num_per_patient >=1
@@ -284,7 +283,10 @@ class NIHDataResampleModule(pl.LightningDataModule):
         print('#test:  ', len(self.test_set))
 
     def train_dataloader(self):
-        return DataLoader(self.train_set, self.batch_size, shuffle=self.shuffle, num_workers=self.num_workers)
+        return DataLoader(self.train_set, self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+    def train_dataloader_nonshuffle(self):
+        return DataLoader(self.train_set, self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def val_dataloader(self):
         return DataLoader(self.val_set, self.batch_size, shuffle=False, num_workers=self.num_workers)

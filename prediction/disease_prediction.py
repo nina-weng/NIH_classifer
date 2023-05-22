@@ -314,26 +314,8 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
 
     if (True and resam):
         print('TESTING on tain set')
-        data = NIHDataResampleModule(img_data_dir=img_data_dir,
-                                     csv_file_img=csv_file_img,
-                                     image_size=image_size,
-                                     pseudo_rgb=False,
-                                     batch_size=batch_size,
-                                     num_workers=num_workers,
-                                     augmentation=augmentation,
-                                     outdir=out_dir,
-                                     version_no=cur_version,
-                                     female_perc_in_training=female_perc_in_training,
-                                     chose_disease=chose_disease_str,
-                                     random_state=random_state,
-                                     shuffle=False,
-                                     num_classes=num_classes,
-                                     num_per_patient=num_per_patient
-
-                                     )
-
-
-        preds_test, targets_test, logits_test = test_func(model, data.train_dataloader(), device)
+        # trainloader need to be non shuffled!
+        preds_test, targets_test, logits_test = test_func(model, data.train_dataloader_nonshuffle(), device)
         df = pd.DataFrame(data=preds_test, columns=cols_names_classes)
         df_logits = pd.DataFrame(data=logits_test, columns=cols_names_logits)
         df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
