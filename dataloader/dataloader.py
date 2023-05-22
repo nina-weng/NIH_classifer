@@ -537,7 +537,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         df_disease = df[df[self.chose_disease]==1]
         df_nondisease = df[df[self.chose_disease]==0]
 
-        if df_disease >= N:
+        if len(df_disease) >= N:
             sampled = df_disease.sample(n=N,random_state=self.rs)
         else:
             # one way: only choose the diseased data
