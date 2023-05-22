@@ -231,6 +231,15 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.outdir = outdir
         self.version_no = version_no
 
+        # pre-defined
+        self.perc_train, self.perc_val, self.perc_test = 0.6, 0.1, 0.3
+        assert self.perc_val + self.perc_test + self.perc_train == 1
+        self.num_classes = num_classes
+        self.male, self.female = 'M', 'F'
+        self.genders = [self.female, self.male]
+        self.col_name_patient_id = 'Patient ID'
+        self.col_name_gender = 'Patient Gender'
+
         # new parameters
         self.female_perc_in_training = female_perc_in_training
         assert self.female_perc_in_training in [0,50,100], 'Not implemented female_perc_in_training: {}'.format(self.female_perc_in_training)
@@ -244,17 +253,9 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.num_per_gender = 13000
         self.disease_prevalence_total,self.disease_prevalence_female, self.disease_prevalence_male = self.get_prevalence()
 
-        # patient wise
+        # patient wise prevalence
         self.num_per_gender_pw = 14100 # min(num_female_subject, num_male_subject), round to 100
         self.disease_prevalence_total_pw, self.disease_prevalence_female_pw, self.disease_prevalence_male_pw = self.get_prevalence_patientwise()
-
-        self.perc_train, self.perc_val, self.perc_test = 0.6,0.1,0.3
-        assert self.perc_val+self.perc_test+self.perc_train == 1
-        self.num_classes = num_classes
-        self.male, self.female = 'M', 'F'
-        self.genders = [self.female, self.male]
-        self.col_name_patient_id = 'Patient ID'
-        self.col_name_gender = 'Patient Gender'
 
 
         df_train,df_valid,df_test = self.dataset_sampling()
