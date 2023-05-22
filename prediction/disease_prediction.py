@@ -44,7 +44,7 @@ gender_setting='100%_female'  # '0%_female', '100%_female'
 fold_num = 'all'
 
 resam=True
-female_perc_in_training_set = [0,50,100]#
+female_perc_in_training_set = [50,100]#
 random_state_set = np.arange(0,1)
 num_per_patient = None
 chose_disease_str =  'Effusion' #'Pneumonia','Pneumothorax'
