@@ -327,7 +327,8 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                      chose_disease=chose_disease_str,
                                      random_state=random_state,
                                      shuffle=False,
-                                     num_classes=num_classes
+                                     num_classes=num_classes,
+                                     num_per_patient=num_per_patient
 
                                      )
 
