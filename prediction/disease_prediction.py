@@ -31,11 +31,11 @@ elif image_size[0] == 1024:
 else:
     raise Exception('wrong image size')
 
-epochs = 50
+epochs = 2
 num_workers = 2 ###
 model_choose = 'resnet' # or 'densenet'
 model_scale = '50'
-lr=5e-7
+lr=1e-6
 pretrained = True
 augmentation = True
 
@@ -44,7 +44,7 @@ gender_setting='100%_female'  # '0%_female', '100%_female'
 fold_num = 'all'
 
 resam=True
-female_perc_in_training_set = [0]#
+female_perc_in_training_set = [0,50,100]#
 random_state_set = np.arange(0,1)
 num_per_patient = None
 chose_disease_str =  'Effusion' #'Pneumonia','Pneumothorax'
