@@ -221,6 +221,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
                  chose_disease='No Finding',
                  random_state=None,
                  num_classes=None,
+                 num_per_patient =1, # int or None, None means no sampling
                  shuffle=True):
         super().__init__()
         self.img_data_dir = img_data_dir
@@ -234,9 +235,9 @@ class NIHDataResampleModule(pl.LightningDataModule):
         assert self.female_perc_in_training in [0,50,100], 'Not implemented female_perc_in_training: {}'.format(self.female_perc_in_training)
         self.chose_disease = chose_disease # str, one of the labels
         self.rs = random_state
-        self.male, self.female = 'M', 'F'
-        self.genders = [self.female, self.male]
         self.shuffle = shuffle
+        self.num_per_patient= num_per_patient
+        assert self.num_per_patient >=1
 
         # pre-defined parameter
         self.num_per_gender = 13000
@@ -244,6 +245,10 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.perc_train, self.perc_val, self.perc_test = 0.6,0.1,0.3
         assert self.perc_val+self.perc_test+self.perc_train == 1
         self.num_classes = num_classes
+        self.male, self.female = 'Male', 'Female'
+        self.genders = [self.female, self.male]
+        self.col_name_patient_id = 'Patient ID'
+        self.col_name_gender = 'Patient Gender'
 
 
         df_train,df_valid,df_test = self.dataset_sampling()
@@ -293,42 +298,70 @@ class NIHDataResampleModule(pl.LightningDataModule):
         :return:
         '''
         df = pd.read_csv(self.csv_file_img, header=0)
-        #patient_id_list = list(set(df['Patient ID'].to_list()))
-        grouped = df.groupby('Patient ID')
-        df_per_patient = grouped.apply(lambda x: x.sample(n=1, random_state=self.rs))
+        # one way of sampling one data from each patient
+        # grouped = df.groupby('Patient ID')
+        # df_per_patient = grouped.apply(lambda x: x.sample(n=1, random_state=self.rs))
+
+        # the other way, more flexible
+        patient_id_list = list(set(df[self.col_name_patient_id].to_list()))
+        sampled_df = None
+        patient_info_column_names = ['pid',self.col_name_gender ,'averaged_disease_label']
+        patient_info_df = pd.DataFrame(columns=patient_info_column_names) # get the gender and disease label information for each patient
+        for each_pid in patient_id_list:
+            df_this_pid = df[df[self.col_name_patient_id] == each_pid]
+            len_this_pid = len(df_this_pid)
+
+            # sampling number is the minimum of number of data samples of this patient and the defined number of samples per patient
+            if self.num_per_patient is None:
+                N = len_this_pid # when num_per_patient is None, do not do sampling.
+            else:
+                N = min(len_this_pid, self.num_per_patient)
+
+            #     print(len_this_pid,N)
+            sampled_this_pid = self.prioritize_sampling(df_this_pid, N=N)
+            if sampled_df is None:
+                sampled_df = sampled_this_pid
+            else:
+                sampled_df = pd.concat([sampled_df, sampled_this_pid], axis=0)
+            assert len(sampled_this_pid.columns) == len(sampled_df.columns)
+
+            # info
+            this_gender = df_this_pid[self.col_name_gender].to_list()[0]
+            averaged_disease_label = sampled_this_pid[self.chose_disease].mean()
+            data = [[each_pid,this_gender,averaged_disease_label]]
+            df_tmp = pd.DataFrame(data=data, columns=patient_info_column_names)
+            patient_info_df = pd.concat([patient_info_df, df_tmp])
+
+
 
 
         train_set, val_set, test_set = None, None, None
         for each_gender in self.genders:
             for isDisease in [True, False]:
-                this_df = df_per_patient[(df_per_patient['Patient Gender'] == each_gender) &
-                                         (df_per_patient[self.chose_disease] == isDisease)]
-                print('{}+{}, number of samples:{}'.format(each_gender, isDisease, len(this_df)))
+                subgroup_patients = patient_info_df[(patient_info_df[self.col_name_gender == each_gender]) & \
+                                                    (patient_info_df['averaged_disease_label']>0 == isDisease)]
 
-                p = self.disease_pervalence_female[self.chose_disease] if each_gender==self.female else \
-                    self.disease_pervalence_male[self.chose_disease]
+                this_train_pid, this_val_pid, this_test_pid= self.set_split(subgroup_patients,self.perc_train,self.perc_val,self.perc_test,
+                                                   self.rs)
+                train_pid_list = this_train_pid['pid'].to_list()
+                val_pid_list = this_val_pid['pid'].to_list()
+                test_pid_list = this_test_pid['pid'].to_list()
 
-                N = int(self.num_per_gender * p) if isDisease else int(
-                    self.num_per_gender * (1 - p))
-                print('N:{}'.format(N))
-
-                if N > len(this_df):
-                    # not enough samples for keeping the same amount of data per resampling
-                    print('random state {} does not provide with enough disease-labeled samples'.format(self.rs))
-                    return None,None,None
-
-                this_df = this_df.sample(n=N, random_state=self.rs)
-                this_train, this_val, this_test = self.set_split(this_df, self.perc_train,self.perc_val,self.perc_test, self.rs)
 
                 # keep the training set same amount of samples for female_perc_in_training = [0,50,100]
                 if self.female_perc_in_training == 50:
-                    N_train=len(this_train)
-                    N_train_half = int(N_train/2)
-                    this_train = this_train.sample(n=N_train_half, random_state=self.rs)
+                    # when sampling for 50% female/male, sampled based on pid instead of samples
+                    N_train_patient=len(train_pid_list)
+                    N_train_patient_half = int(N_train_patient/2)
+                    train_pid_list = train_pid_list.sample(n=N_train_patient_half, random_state=self.rs)
                     # val should keep the same as train
-                    N_val = len(this_val)
-                    N_val_half = int(N_val/2)
-                    this_val = this_val.sample(n=N_val_half,random_state=self.rs)
+                    N_val_patient = len(val_pid_list)
+                    N_val_patient_half = int(N_val_patient/2)
+                    val_pid_list = val_pid_list.sample(n=N_val_patient_half,random_state=self.rs)
+
+                this_train = sampled_df[sampled_df[self.col_name_patient_id] in train_pid_list]
+                this_val = sampled_this_pid[sampled_df[self.col_name_patient_id] in val_pid_list]
+                this_test = sampled_this_pid[sampled_df[self.col_name_patient_id] in test_pid_list]
 
                 if each_gender == self.female and self.female_perc_in_training != 0:
                     if train_set is None:
@@ -369,6 +402,90 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
         return train_set,val_set,test_set
 
+    def dataset_sampling_ori(self):
+        '''
+        doc: https://docs.google.com/document/d/1N1XJWFqF_5CDYkdbbXlzXmtepd-PFPhtKaDXwjKVYH8/edit
+        :param csv_file_img:
+        :return:
+        '''
+        df = pd.read_csv(self.csv_file_img, header=0)
+
+        grouped = df.groupby('Patient ID')
+        df_per_patient = grouped.apply(lambda x: x.sample(n=1, random_state=self.rs))
+
+
+        train_set, val_set, test_set = None, None, None
+        for each_gender in self.genders:
+            for isDisease in [True, False]:
+                this_df = df_per_patient[(df_per_patient[self.col_name_patient_id] == each_gender) &
+                                         (df_per_patient[self.chose_disease] == isDisease)]
+                print('{}+{}, number of samples:{}'.format(each_gender, isDisease, len(this_df)))
+
+                p = self.disease_pervalence_female[self.chose_disease] if each_gender == self.female else \
+                    self.disease_pervalence_male[self.chose_disease]
+
+                N = int(self.num_per_gender * p) if isDisease else int(
+                    self.num_per_gender * (1 - p))
+                print('N:{}'.format(N))
+
+                if N > len(this_df):
+                    # not enough samples for keeping the same amount of data per resampling
+                    print('random state {} does not provide with enough disease-labeled samples'.format(self.rs))
+                    return None, None, None
+
+                this_df = this_df.sample(n=N, random_state=self.rs)
+                this_train, this_val, this_test = self.set_split(this_df, self.perc_train, self.perc_val,
+                                                                 self.perc_test, self.rs)
+
+                # keep the training set same amount of samples for female_perc_in_training = [0,50,100]
+                if self.female_perc_in_training == 50:
+                    N_train = len(this_train)
+                    N_train_half = int(N_train / 2)
+                    this_train = this_train.sample(n=N_train_half, random_state=self.rs)
+                    # val should keep the same as train
+                    N_val = len(this_val)
+                    N_val_half = int(N_val / 2)
+                    this_val = this_val.sample(n=N_val_half, random_state=self.rs)
+
+                if each_gender == self.female and self.female_perc_in_training != 0:
+                    if train_set is None:
+                        train_set = this_train
+                    else:
+                        train_set = pd.concat([train_set, this_train], axis=0)
+                    # val should keep the same as train
+                    if val_set is None:
+                        val_set = this_val
+                    else:
+                        val_set = pd.concat([val_set, this_val], axis=0)
+
+                if each_gender == self.male and self.female_perc_in_training != 100:
+                    if train_set is None:
+                        train_set = this_train
+                    else:
+                        train_set = pd.concat([train_set, this_train], axis=0)
+                    if val_set is None:
+                        val_set = this_val
+                    else:
+                        val_set = pd.concat([val_set, this_val], axis=0)
+
+                # test set is not influenced by training settingsS
+                if test_set is None:
+                    test_set = this_test
+                else:
+                    test_set = pd.concat([test_set, this_test], axis=0)
+
+        train_set.reset_index(inplace=True, drop=True)
+        val_set.reset_index(inplace=True, drop=True)
+        test_set.reset_index(inplace=True, drop=True)
+
+        # save splits
+        train_set.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)), index=False)
+        val_set.to_csv(os.path.join(self.outdir, 'val.version_{}.csv'.format(self.version_no)), index=False)
+        test_set.to_csv(os.path.join(self.outdir, 'test.version_{}.csv'.format(self.version_no)), index=False)
+
+        return train_set, val_set, test_set
+
+
     def get_prevalence(self):
         df = pd.read_csv(self.csv_file_img, header=0)
         df_per_patient = df.groupby(['Patient ID', 'Patient Gender']).mean()
@@ -408,4 +525,28 @@ class NIHDataResampleModule(pl.LightningDataModule):
         return train, val, test
 
 
+    def prioritize_sampling(self,df,N):
+        '''
+        sample from df, select the data sample with the disease first
+        :param df:
+        :param N:
+        :param rs:
+        :return:
+        '''
+        df_disease = df[df[self.chose_disease]==1]
+        df_nondisease = df[df[self.chose_disease]==0]
+
+        if df_disease >= N:
+            sampled = df_disease.sample(n=N,random_state=self.rs)
+        else:
+            # one way: only choose the diseased data
+            # the other way: also choose the non-diseased data, so for one patient, it could be happened that
+            # 1 patient, 5 samples, 2/5 are non-diseased and 3/5 are diseased.
+            sampled = df_disease
+            N = N-len(sampled)
+            sampled_nondisease = df_nondisease.sample(n=N,random_state=self.rs)
+            sampled = pd.concat([sampled,sampled_nondisease],axis=0)
+            assert len(sampled.columns) == len(sampled_nondisease.columns)
+
+        return sampled
 
