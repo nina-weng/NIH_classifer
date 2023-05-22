@@ -376,8 +376,8 @@ class NIHDataResampleModule(pl.LightningDataModule):
                     val_pid_list = val_pid_list.sample(n=N_val_patient_half,random_state=self.rs)
 
                 this_train = sampled_df[sampled_df[self.col_name_patient_id].isin(train_pid_list)]
-                this_val = sampled_this_pid[sampled_df[self.col_name_patient_id].isin(val_pid_list)]
-                this_test = sampled_this_pid[sampled_df[self.col_name_patient_id].isin(test_pid_list)]
+                this_val = sampled_df[sampled_df[self.col_name_patient_id].isin(val_pid_list)]
+                this_test = sampled_df[sampled_df[self.col_name_patient_id].isin(test_pid_list)]
 
                 if each_gender == self.female and self.female_perc_in_training != 0:
                     if train_set is None:
