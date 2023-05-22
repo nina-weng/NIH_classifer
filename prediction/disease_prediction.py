@@ -44,9 +44,9 @@ gender_setting='100%_female'  # '0%_female', '100%_female'
 fold_num = 'all'
 
 resam=True
-female_perc_in_training_set = [0,50,100]#
+female_perc_in_training_set = [0]#
 random_state_set = np.arange(0,1)
-num_per_patient = 2
+num_per_patient = None
 chose_disease_str =  'Effusion' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
@@ -163,22 +163,24 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
 
     if resam:
         if loss_func_type == 'BCE':
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-ml{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
+                                                                                      num_per_patient,
                                                                                       int(isMultilabel),
                                                                                       random_state,
                                                                                       image_size[0])
         else:
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-ml{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
                                                                                       female_perc_in_training,
                                                                                       chose_disease_str,
+                                                                                      num_per_patient,
                                                                                       int(isMultilabel),
                                                                                       random_state,
                                                                                       loss_func_type,
