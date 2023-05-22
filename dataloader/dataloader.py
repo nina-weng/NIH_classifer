@@ -237,7 +237,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
         self.rs = random_state
         self.shuffle = shuffle
         self.num_per_patient= num_per_patient
-        assert self.num_per_patient >=1
+        assert self.num_per_patient >=1 or self.num_per_patient is None
 
         # pre-defined parameter
         self.num_per_gender = 13000
