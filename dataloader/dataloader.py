@@ -333,6 +333,12 @@ class NIHDataResampleModule(pl.LightningDataModule):
             df_tmp = pd.DataFrame(data=data, columns=patient_info_column_names)
             patient_info_df = pd.concat([patient_info_df, df_tmp])
 
+        print('#' * 30)
+        print(len(sampled_df))
+        print(len(patient_info_df))
+        print('#'*30)
+        print(patient_info_df)
+        print('#' * 30)
 
 
 
