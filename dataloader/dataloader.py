@@ -68,7 +68,7 @@ class NIHDataset(Dataset):
         image = T.ToTensor()(sample['image'])
         if self.crop is not None:
             img_size = image.shape
-            print(int(img_size[1]*self.crop))
+            # print(int(img_size[1]*self.crop))
             image = image[:,:int(img_size[1]*self.crop)]
         label = torch.from_numpy(sample['label'])
 
@@ -106,6 +106,10 @@ class NIHDataset(Dataset):
 
         sample = self.get_sample(item) #PIL
         image = T.ToTensor()(sample['image'])
+        if self.crop is not None:
+            img_size = image.shape
+            # print(int(img_size[1]*self.crop))
+            image = image[:,:int(img_size[1]*self.crop)]
 
         if self.do_augment:
             image_aug = self.augment(image)
