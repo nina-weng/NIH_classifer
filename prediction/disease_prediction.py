@@ -47,14 +47,15 @@ resam=True
 female_perc_in_training_set = [0,50,100]#
 random_state_set = np.arange(0,1)
 num_per_patient = None
-chose_disease_str =  'Effusion' #'Pneumonia','Pneumothorax'
+disease_list=['Pneumothorax']
+# chose_disease_str =  'Effusion' #'Pneumonia','Pneumothorax'
 random_state = 2022
 if resam: num_classes = 1
 # print('multi label training')
 # num_classes = len(DISEASE_LABELS)
 isMultilabel = True if num_classes!=1 else False
 
-save_model_para = True
+save_model_para = False
 loss_func_type='BCE'
 
 
@@ -128,12 +129,16 @@ def embeddings(model, data_loader, device):
 
 
 
-def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,random_state=None):
+def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,random_state=None,chose_disease_str=None):
 
 
 
     # sets seeds for numpy, torch, python.random and PYTHONHASHSEED.
     pl.seed_everything(42, workers=True)
+
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda:" + str(hparams.dev) if use_cuda else "cpu")
+    print('DEVICE:{}'.format(device))
 
     # get run_config
     if not gi_split:
@@ -240,6 +245,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
         # end this run
         return
 
+
     # model
     if model_choose == 'resnet':
         model_type = ResNet
@@ -247,6 +253,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
         model_type = DenseNet
     model = model_type(num_classes=num_classes,lr=lr,pretrained=pretrained,model_scale=model_scale,
                        loss_func_type = loss_func_type)
+
 
     temp_dir = os.path.join(out_dir, 'temp_version_{}'.format(cur_version))
     if not os.path.exists(temp_dir):
@@ -285,9 +292,6 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                             model_scale=model_scale,
                                             loss_func_type=loss_func_type
                                             )
-
-    use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda:" + str(hparams.dev) if use_cuda else "cpu")
 
     model.to(device)
 
@@ -357,6 +361,7 @@ if __name__ == '__main__':
     # else:
     #     for i in range(20):
     #         main(args, gender_setting=gender_setting, fold_num=i)
-    for female_perc_in_training in female_perc_in_training_set:
-        for i in random_state_set:
-            main(args, female_perc_in_training=female_perc_in_training,random_state = i)
+    for d in disease_list:
+        for female_perc_in_training in female_perc_in_training_set:
+            for i in random_state_set:
+                main(args, female_perc_in_training=female_perc_in_training,random_state = i,chose_disease_str=d)

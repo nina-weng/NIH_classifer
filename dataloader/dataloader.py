@@ -64,6 +64,9 @@ class NIHDataset(Dataset):
 
         # image = torch.from_numpy(sample['image'])
         image = T.ToTensor()(sample['image'])
+        img_size = image.shape
+        print(int(img_size[1]*2/3))
+        image = image[:,:int(img_size[1]*2/3)]
         label = torch.from_numpy(sample['label'])
 
         # image = torch.permute(image, dims=(2, 0, 1))
@@ -314,6 +317,9 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
         # the other way, more flexible
         patient_id_list = list(set(df[self.col_name_patient_id].to_list()))
+        patient_id_list.sort()
+        print(patient_id_list[:10])
+
         sampled_df = None
         patient_info_column_names = ['pid',self.col_name_gender ,'averaged_disease_label']
         patient_info_df = pd.DataFrame(columns=patient_info_column_names) # get the gender and disease label information for each patient
@@ -347,6 +353,9 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
         print('#' * 30)
         print(len(sampled_df))
+        print('#' * 30)
+        print(sampled_df)
+        print('#' * 30)
         print(len(patient_info_df))
         print('#'*30)
         print(patient_info_df)
