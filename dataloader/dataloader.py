@@ -115,7 +115,7 @@ class NIHDataset(Dataset):
             image_aug = self.augment(image)
 
         image_all = torch.cat((image,image_aug),axis= 1)
-        assert image_all.shape[1]==image[1]*2, 'image_all.shape[1] = {}'.format(image_all.shape[1])
+        assert image_all.shape[1]==image.shape[1]*2, 'image_all.shape[1] = {}'.format(image_all.shape[1])
         return image_all
 
 
