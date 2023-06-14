@@ -22,12 +22,14 @@ DISEASE_LABELS = ['Effusion', 'Emphysema', 'Nodule', 'Atelectasis', 'Infiltratio
                   'Consolidation', 'Fibrosis', 'Cardiomegaly', 'Pneumonia', 'Edema', 'Hernia']#, 'No Finding']
 
 class NIHDataset(Dataset):
-    def __init__(self, img_data_dir, df_data, image_size, augmentation=False, pseudo_rgb = False,single_label=None):
+    def __init__(self, img_data_dir, df_data, image_size, augmentation=False, pseudo_rgb = False,single_label=None,
+                 crop=None):
         self.df_data = df_data
         self.image_size = image_size
         self.do_augment = augmentation
         self.pseudo_rgb = pseudo_rgb
         self.single_label = single_label
+        self.crop=crop
 
 
         # self.labels = ['melanoma','nevus','basal cell carcinoma','actinic keratosis','benign keratosis','dermatofibroma',
@@ -64,9 +66,10 @@ class NIHDataset(Dataset):
 
         # image = torch.from_numpy(sample['image'])
         image = T.ToTensor()(sample['image'])
-        img_size = image.shape
-        print(int(img_size[1]*2/3))
-        image = image[:,:int(img_size[1]*2/3)]
+        if self.crop is not None:
+            img_size = image.shape
+            print(int(img_size[1]*self.crop))
+            image = image[:,:int(img_size[1]*self.crop)]
         label = torch.from_numpy(sample['label'])
 
         # image = torch.permute(image, dims=(2, 0, 1))
@@ -226,6 +229,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
                  random_state=None,
                  num_classes=None,
                  num_per_patient =1, # int or None, None means no sampling
+                 crop=None
                  ):
         super().__init__()
         self.img_data_dir = img_data_dir
@@ -233,6 +237,7 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
         self.outdir = outdir
         self.version_no = version_no
+        self.crop = crop
 
         # pre-defined
         self.perc_train, self.perc_val, self.perc_test = 0.6, 0.1, 0.3
@@ -281,11 +286,11 @@ class NIHDataResampleModule(pl.LightningDataModule):
 
 
         self.train_set = NIHDataset(self.img_data_dir,self.df_train, self.image_size, augmentation=augmentation,
-                                    pseudo_rgb=pseudo_rgb,single_label=single_label)
+                                    pseudo_rgb=pseudo_rgb,single_label=single_label,crop=self.crop)
         self.val_set = NIHDataset(self.img_data_dir,self.df_valid, self.image_size, augmentation=False,
-                                  pseudo_rgb=pseudo_rgb,single_label=single_label)
+                                  pseudo_rgb=pseudo_rgb,single_label=single_label,crop=self.crop)
         self.test_set = NIHDataset(self.img_data_dir,self.df_test, self.image_size, augmentation=False,
-                                   pseudo_rgb=pseudo_rgb,single_label=single_label)
+                                   pseudo_rgb=pseudo_rgb,single_label=single_label,crop=self.crop)
 
         print('#train: ', len(self.train_set))
         print('#val:   ', len(self.val_set))

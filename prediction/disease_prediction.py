@@ -54,6 +54,7 @@ if resam: num_classes = 1
 # print('multi label training')
 # num_classes = len(DISEASE_LABELS)
 isMultilabel = True if num_classes!=1 else False
+crop = 0.6 # None or [0,1]
 
 save_model_para = False
 loss_func_type='BCE'
@@ -168,7 +169,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
 
     if resam:
         if loss_func_type == 'BCE':
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-imgs{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-imgs{}-crop{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
@@ -177,9 +178,10 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                       num_per_patient,
                                                                                       int(isMultilabel),
                                                                                       random_state,
-                                                                                      image_size[0])
+                                                                                      image_size[0],
+                                                                                      crop)
         else:
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-loss{}-imgs{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-loss{}-imgs{}-crop{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
@@ -189,7 +191,8 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                       int(isMultilabel),
                                                                                       random_state,
                                                                                       loss_func_type,
-                                                                                      image_size[0])
+                                                                                      image_size[0],
+                                                                                      crop)
 
     print('------------------------------------------\n'*3)
     print(run_config)
@@ -237,7 +240,8 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                 chose_disease=chose_disease_str,
                                 random_state=random_state,
                                 num_classes=num_classes,
-                                num_per_patient=num_per_patient
+                                num_per_patient=num_per_patient,
+                                crop=crop
 
             )
 
