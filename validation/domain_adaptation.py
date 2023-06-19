@@ -12,7 +12,7 @@ import pandas as pd
 def load_model(dataset_type,ckpt_dir):
     model_choose = 'resnet'
     num_classes = 1
-    lr = 1e-5
+    lr = 1e-6
     pretrained = True
     model_scale = '50'
 
@@ -38,16 +38,16 @@ def load_model(dataset_type,ckpt_dir):
 
 
 # ## Hyperparameters: D=Pneumothorax, 0%female, rs=range[0,5]
-def main():
+def main(f_perc):
     run_config_NIH = []
     run_config_chexpert = []
     version_no_NIH = []
     version_no_chexpert = []
 
-    for i in range(5):
+    for i in range(1):
         run_config_NIH.append(
-            'resnet50-lr1e-05-ep20-pt1-aug1-0%female-DPneumothorax-rs{}-imgs224_newval_es_p3'.format(i))
-        run_config_chexpert.append('resnet50-lr1e-05-ep20-pt1-aug1-0%female-DPneumothorax-rs{}-imgs224'.format(i))
+            'resnet50-lr1e-06-ep20-pt1-aug1-{}%female-DPneumothorax-npp1-ml0-rs{}-imgs224'.format(f_perc,i))
+        run_config_chexpert.append('resnet50-lr1e-06-ep20-pt1-aug1-{}%female-DPneumothorax-npp1-ml0-rs{}-imgs224'.format(f_perc,i))
         version_no_NIH.append(0)
         version_no_chexpert.append(0)
 
@@ -72,7 +72,7 @@ def main():
     num_workers=1
     augmentation=False
     run_dir = '/work3/ninwe/run/NIH/disease/'
-    run_config='intradataset_rs_{}'.format(rs_chose)
+    run_config='interdataset_fpec{}_rs{}'.format(f_perc,rs_chose)
     out_dir = run_dir + run_config
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
@@ -84,19 +84,21 @@ def main():
     female_perc_in_training=0
     chose_disease_str='Pneumothorax'
 
-
     data_NIH = NIHDataResampleModule(img_data_dir=img_data_dir,
-                                     csv_file_img=csv_file_img,
-                                     image_size=image_size,
-                                     pseudo_rgb=False,
-                                     batch_size=batch_size,
-                                     num_workers=num_workers,
-                                     augmentation=augmentation,
-                                     outdir=out_dir_NIH,
-                                     version_no=cur_version,
-                                     female_perc_in_training=female_perc_in_training,
-                                     chose_disease=chose_disease_str,
-                                     random_state=rs_chose)
+                                 csv_file_img=csv_file_img,
+                                 image_size=image_size,
+                                 pseudo_rgb=False,
+                                 batch_size=batch_size,
+                                 num_workers=num_workers,
+                                 augmentation=augmentation,
+                                 outdir=out_dir,
+                                 version_no=cur_version,
+                                 female_perc_in_training=female_perc_in_training,
+                                 chose_disease=chose_disease_str,
+                                 random_state=rs_chose,
+                                 num_classes=1,
+                                 num_per_patient=1,
+                                 crop=None)
 
     img_data_dir = '/work3/ninwe/dataset/'
     csv_file_img = '../datafiles/' + 'chexpert.sample.csv'
@@ -113,11 +115,13 @@ def main():
                                 batch_size=batch_size,
                                 num_workers=num_workers,
                                 augmentation=augmentation,
-                                outdir=out_dir_chexpert,
+                                outdir=out_dir,
                                 version_no=cur_version,
                                 female_perc_in_training=female_perc_in_training,
                                 chose_disease=chose_disease_str,
-                                random_state=rs_chose)
+                                random_state=rs_chose,
+                                num_classes=1,
+                                num_per_patient=1)
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:" + str(0) if use_cuda else "cpu")
@@ -164,4 +168,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    for f_perc in [0,50,100]:
+        main(f_perc)
