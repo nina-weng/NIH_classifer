@@ -71,8 +71,9 @@ def main(f_perc):
     batch_size=64
     num_workers=1
     augmentation=False
+    chose_disease_str = 'Pneumothorax'
     run_dir = '/work3/ninwe/run/NIH/disease/'
-    run_config='interdataset_fpec{}_rs{}'.format(f_perc,rs_chose)
+    run_config='interdataset_D{}_fpec{}_rs{}'.format(chose_disease_str,f_perc,rs_chose)
     out_dir = run_dir + run_config
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
@@ -81,8 +82,7 @@ def main(f_perc):
         os.makedirs(out_dir_NIH)
 
     cur_version = get_cur_version(out_dir)
-    female_perc_in_training=0
-    chose_disease_str='Pneumothorax'
+
 
     data_NIH = NIHDataResampleModule(img_data_dir=img_data_dir,
                                  csv_file_img=csv_file_img,
@@ -93,7 +93,7 @@ def main(f_perc):
                                  augmentation=augmentation,
                                  outdir=out_dir,
                                  version_no=cur_version,
-                                 female_perc_in_training=female_perc_in_training,
+                                 female_perc_in_training=f_perc,
                                  chose_disease=chose_disease_str,
                                  random_state=rs_chose,
                                  num_classes=1,
@@ -117,7 +117,7 @@ def main(f_perc):
                                 augmentation=augmentation,
                                 outdir=out_dir,
                                 version_no=cur_version,
-                                female_perc_in_training=female_perc_in_training,
+                                female_perc_in_training=f_perc,
                                 chose_disease=chose_disease_str,
                                 random_state=rs_chose,
                                 num_classes=1,
