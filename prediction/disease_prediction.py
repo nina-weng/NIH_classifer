@@ -197,7 +197,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                       random_state,
                                                                                       loss_func_type,
                                                                                       image_size[0],
-                                                                                      crop
+                                                                                      crop,
                                                                                       int(save_model_para))
 
     print('------------------------------------------\n'*3)

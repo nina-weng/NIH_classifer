@@ -140,7 +140,7 @@ class NIHDataModule(pl.LightningDataModule):
         if self.gi_split:
             df_train = pd.read_csv('../datafiles/{}/Fold_{}/train.csv'.format(self.gender_setting,self.fold_num),header=0)
             df_valid = pd.read_csv('../datafiles/{}/Fold_{}/dev.csv'.format(self.gender_setting,self.fold_num), header=0)
-            df_test_male = pd.read_csv('../datafiles/{}/Fold_{}/test_males.csv'.format(self.gender_setting,self.fold_num), header=0)
+            df_test_male = pd.read_csv('../datafiles/{}/Fold_{}/test_male.csv'.format(self.gender_setting,self.fold_num), header=0)
             df_test_female = pd.read_csv('../datafiles/{}/Fold_{}/test_female.csv'.format(self.gender_setting,self.fold_num), header=0)
             df_test = pd.concat([df_test_male, df_test_female])
             if self.view_position == 'AP' or self.view_position == 'PA':
@@ -151,13 +151,6 @@ class NIHDataModule(pl.LightningDataModule):
                 df_train.reset_index(inplace=True)
                 df_valid.reset_index(inplace=True)
                 df_test.reset_index(inplace=True)
-
-                if self.save_split:
-                    df_train.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)),
-                                    index=False)
-                    df_valid.to_csv(os.path.join(self.outdir, 'val.version_{}.csv'.format(self.version_no)), index=False)
-                    df_test.to_csv(os.path.join(self.outdir, 'test.version_{}.csv'.format(self.version_no)),
-                                   index=False)
 
             df_train.reset_index(inplace = True)
             df_valid.reset_index(inplace=True)
