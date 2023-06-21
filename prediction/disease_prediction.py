@@ -42,7 +42,7 @@ augmentation = True
 
 gi_split=True
 # gender_setting='100%_female'  # '0%_female', '100%_female'
-fold_nums=np.range(0,20)
+fold_nums=np.arange(0,20)
 
 resam=False
 female_perc_in_training_set = [0,50,100]#
