@@ -18,6 +18,7 @@ from skimage.io import imsave
 from tqdm import tqdm
 from argparse import ArgumentParser
 import shutil
+import numpy as np
 
 num_classes = len(DISEASE_LABELS)
 image_size = (1024, 1024)
@@ -40,10 +41,10 @@ pretrained = True
 augmentation = True
 
 gi_split=True
-gender_setting='100%_female'  # '0%_female', '100%_female'
-fold_num = 'all'
+# gender_setting='100%_female'  # '0%_female', '100%_female'
+fold_nums=np.range(0,20)
 
-resam=True
+resam=False
 female_perc_in_training_set = [0,50,100]#
 random_state_set = np.arange(0,1)
 num_per_patient = 1
@@ -159,6 +160,7 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
         view_position = 'all'  # 'AP','PA','all'
         vp_sample = False
         only_gender = None  # 'F' , 'M', None
+        gender_setting = '{}%_female'.format(female_perc_in_training)
         run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-GIsplit-{}-Fold{}-imgs{}'.format(model_choose, model_scale, lr,
                                                                                    epochs,
                                                                                    int(pretrained),
@@ -365,7 +367,16 @@ if __name__ == '__main__':
     # else:
     #     for i in range(20):
     #         main(args, gender_setting=gender_setting, fold_num=i)
-    for d in disease_list:
-        for female_perc_in_training in female_perc_in_training_set:
-            for i in random_state_set:
-                main(args, female_perc_in_training=female_perc_in_training,random_state = i,chose_disease_str=d)
+
+
+    if resam:
+        print('***********RESAMPLING EXPERIMENT**********\n'*5)
+        for d in disease_list:
+            for female_perc_in_training in female_perc_in_training_set:
+                for i in random_state_set:
+                    main(args, female_perc_in_training=female_perc_in_training,random_state = i,chose_disease_str=d)
+    elif gi_split:
+        print('***********GI SPLIT EXPERIMENT**********\n' * 5)
+        for f_perc in female_perc_in_training_set:
+            for fold_i in fold_nums:
+                main(args, female_perc_in_training=f_perc, fold_num=fold_i)
