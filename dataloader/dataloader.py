@@ -163,6 +163,11 @@ class NIHDataModule(pl.LightningDataModule):
             df_valid.reset_index(inplace=True)
             df_test.reset_index(inplace=True)
 
+            if self.save_split:
+                df_train.to_csv(os.path.join(self.outdir, 'train.version_{}.csv'.format(self.version_no)), index=False)
+                df_valid.to_csv(os.path.join(self.outdir, 'val.version_{}.csv'.format(self.version_no)), index=False)
+                df_test.to_csv(os.path.join(self.outdir, 'test.version_{}.csv'.format(self.version_no)), index=False)
+
             self.df_train = df_train
             self.df_valid = df_valid
             self.df_test = df_test
@@ -194,6 +199,9 @@ class NIHDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(self.test_set, self.batch_size, shuffle=False, num_workers=self.num_workers)
+
+    def train_dataloader_nonshuffle(self):
+        return DataLoader(self.train_set, self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def dataset_split(self,csv_all_img):
         df= pd.read_csv(csv_all_img,header=0)
