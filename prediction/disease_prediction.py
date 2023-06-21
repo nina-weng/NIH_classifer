@@ -150,28 +150,30 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
             raise Exception('Could not sample the train set anymore for VP=AP/PA!')
         only_gender = None  # 'F' , 'M', None
 
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-sam{}-SEX{}-imgs{}'.format(model_choose, model_scale, lr, epochs,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-sam{}-SEX{}-imgs{}-mpara{}'.format(model_choose, model_scale, lr, epochs,
                                                                                 int(pretrained),
                                                                                 int(augmentation), str(view_position),
                                                                                 int(vp_sample),
                                                                                 str(only_gender),
-                                                                                image_size[0])
+                                                                                image_size[0],
+                                                                                int(save_model_para))
     else:
         view_position = 'all'  # 'AP','PA','all'
         vp_sample = False
         only_gender = None  # 'F' , 'M', None
         gender_setting = '{}%_female'.format(female_perc_in_training)
-        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-GIsplit-{}-Fold{}-imgs{}'.format(model_choose, model_scale, lr,
+        run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-VP{}-GIsplit-{}-Fold{}-imgs{}-mpara{}'.format(model_choose, model_scale, lr,
                                                                                    epochs,
                                                                                    int(pretrained),
                                                                                    int(augmentation), view_position,
                                                                                    gender_setting,
                                                                                    fold_num,
-                                                                                   image_size[0])
+                                                                                   image_size[0],
+                                                                                   int(save_model_para))
 
     if resam:
         if loss_func_type == 'BCE':
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-imgs{}-crop{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-imgs{}-crop{}-mpara{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
@@ -181,9 +183,10 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                       int(isMultilabel),
                                                                                       random_state,
                                                                                       image_size[0],
-                                                                                      crop)
+                                                                                      crop,
+                                                                                      int(save_model_para))
         else:
-            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-loss{}-imgs{}-crop{}'.format(model_choose, model_scale, lr,
+            run_config = '{}{}-lr{}-ep{}-pt{}-aug{}-{}%female-D{}-npp{}-ml{}-rs{}-loss{}-imgs{}-crop{}-mpara{}'.format(model_choose, model_scale, lr,
                                                                                       epochs,
                                                                                       int(pretrained),
                                                                                       int(augmentation),
@@ -194,7 +197,8 @@ def main(hparams,gender_setting=None,fold_num=None,female_perc_in_training=None,
                                                                                       random_state,
                                                                                       loss_func_type,
                                                                                       image_size[0],
-                                                                                      crop)
+                                                                                      crop
+                                                                                      int(save_model_para))
 
     print('------------------------------------------\n'*3)
     print(run_config)
