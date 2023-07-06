@@ -6,6 +6,7 @@ from tqdm import tqdm
 import sys
 sys.path.append('../../NIH_classifer')
 from dataloader.dataloader import NIHDataResampleModule,NIHDataset
+from validation.dataloader_tmpuse import ChexpertDatasetNew
 from torch.utils.data import DataLoader
 from prediction.models import ResNet, DenseNet
 
@@ -52,11 +53,17 @@ def test(model, data_loader, device):
     return preds.cpu().numpy(), targets.cpu().numpy(), logits.cpu().numpy()
 
 
-def get_test_dataloader(img_data_dir,df,D):
+def get_test_dataloader(img_data_dir,df,D,dataset):
     image_size=(224,224)
-    test_set = NIHDataset(img_data_dir,df, image_size=image_size, augmentation=False,
-                                        pseudo_rgb=False,single_label=D,crop=None)
-    dataloader = DataLoader(test_set,batch_size=64, shuffle=False, num_workers=0)
+    if dataset == 'NIH':
+        test_set = NIHDataset(img_data_dir,df, image_size=image_size, augmentation=False,
+                                            pseudo_rgb=False,single_label=D,crop=None)
+        dataloader = DataLoader(test_set,batch_size=64, shuffle=False, num_workers=0)
+    else:
+        test_set = ChexpertDatasetNew(img_data_dir, df, image_size=image_size, augmentation=False,
+                              pseudo_rgb=False, single_label=D)
+        dataloader = DataLoader(test_set, batch_size=64, shuffle=False, num_workers=0)
+
     return dataloader
 
 def main(D,dataset,f_per):
@@ -127,8 +134,8 @@ def main(D,dataset,f_per):
     print(pid_none[:20])
     print(pid_1[:20])
 
-    dataloader_test_none = get_test_dataloader(img_data_dir, test_set_npp_None, D)
-    dataloader_test_1 = get_test_dataloader(img_data_dir, test_set_npp_1, D)
+    dataloader_test_none = get_test_dataloader(img_data_dir, test_set_npp_None, D,dataset=dataset)
+    dataloader_test_1 = get_test_dataloader(img_data_dir, test_set_npp_1, D,dataset=dataset)
 
     print('TESTING')
     save_dir = out_dir+'{}/'.format(D)
