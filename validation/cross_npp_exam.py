@@ -145,7 +145,7 @@ def main(D,dataset,f_per):
             df_logits = pd.DataFrame(data=logits_test, columns=cols_names_logits)
             df_targets = pd.DataFrame(data=targets_test, columns=cols_names_targets)
             df = pd.concat([df, df_logits, df_targets], axis=1)
-            df.to_csv(os.path.join(save_dir, 'train_{}_test_{}.csv'.format(index_meaning[idx], index_meaning[jdx])),
+            df.to_csv(os.path.join(save_dir, 'f_per{}_train_{}_test_{}.csv'.format(f_per,index_meaning[idx], index_meaning[jdx])),
                       index=False)
 
 
