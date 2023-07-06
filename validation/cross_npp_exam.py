@@ -12,7 +12,7 @@ from prediction.models import ResNet, DenseNet
 
 
 D_set = ['Pneumothorax','Cardiomegaly']
-dataset = 'NIH' # 'chexpert'
+dataset = 'chexpert' # 'chexpert'
 f_perc_set = [0,50,100]
 
 
@@ -117,7 +117,7 @@ def main(D,dataset,f_per):
         img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
         col_name_pid = 'Patient ID'
     else:
-        img_data_dir = '/work3/ninwe/dataset/preproc_224x224/'
+        img_data_dir = '/work3/ninwe/dataset/'
         col_name_pid = 'patient_id'
 
     test_set_npp_None = pd.read_csv(run_dir + '/' + run_config_npp_None + '/test.version_0.csv')
