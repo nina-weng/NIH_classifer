@@ -78,7 +78,7 @@ def main(D,dataset,f_per):
         model_type = DenseNet
 
     # load trained model
-    ckpt_dir_none = run_dir + '\\' + run_config_npp_None + '\\version_0\\checkpoints\\'
+    ckpt_dir_none = run_dir + '/' + run_config_npp_None + '/version_0/checkpoints/'
     file_list = os.listdir(ckpt_dir_none)
     assert len(file_list) == 1
     ckpt_path = ckpt_dir_none + file_list[0]
@@ -88,7 +88,7 @@ def main(D,dataset,f_per):
                                                      )
     model_npp_none.eval()
 
-    ckpt_dir_1 = run_dir + '\\' + run_config_npp_1 + '\\version_0\\checkpoints\\'
+    ckpt_dir_1 = run_dir + '/' + run_config_npp_1 + '/version_0/checkpoints/'
     file_list = os.listdir(ckpt_dir_1)
     assert len(file_list) == 1
     ckpt_path = ckpt_dir_1 + file_list[0]
@@ -104,8 +104,8 @@ def main(D,dataset,f_per):
     if dataset == 'NIH':
         img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
 
-    test_set_npp_None = pd.read_csv(run_dir + '\\' + run_config_npp_None + '\\test.version_0.csv')
-    test_set_npp_1 = pd.read_csv(run_dir + '\\' + run_config_npp_1 + '\\test.version_0.csv')
+    test_set_npp_None = pd.read_csv(run_dir + '/' + run_config_npp_None + '/test.version_0.csv')
+    test_set_npp_1 = pd.read_csv(run_dir + '/' + run_config_npp_1 + '/test.version_0.csv')
 
     print(test_set_npp_None.shape)
     print(test_set_npp_1.shape)
