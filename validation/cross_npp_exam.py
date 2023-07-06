@@ -10,8 +10,8 @@ from torch.utils.data import DataLoader
 from prediction.models import ResNet, DenseNet
 
 
-D_set = ['Pneumothorax']
-dataset = 'NIH'
+D_set = ['Pneumothorax','Cardiomegaly']
+dataset = 'NIH' # 'chexpert'
 f_perc_set = [0,50,100]
 
 
@@ -60,10 +60,16 @@ def get_test_dataloader(img_data_dir,df,D):
     return dataloader
 
 def main(D,dataset,f_per):
-    run_config_npp_None = 'resnet50-lr1e-06-ep20-pt1-aug1-{}%female-D{}-npp{}-ml0-rs0-imgs224-cropNone-mpara1'.format(
-        f_per, D, 'None')
-    run_config_npp_1 = 'resnet50-lr1e-06-ep20-pt1-aug1-{}%female-D{}-npp{}-ml0-rs0-imgs224-cropNone-mpara1'.format(
-        f_per, D, '1')
+    if dataset == 'NIH':
+        run_config_npp_None = 'resnet50-lr1e-06-ep20-pt1-aug1-{}%female-D{}-npp{}-ml0-rs0-imgs224-cropNone-mpara1'.format(
+            f_per, D, 'None')
+        run_config_npp_1 = 'resnet50-lr1e-06-ep20-pt1-aug1-{}%female-D{}-npp{}-ml0-rs0-imgs224-cropNone-mpara1'.format(
+            f_per, D, '1')
+    else:
+        run_config_npp_None = 'resnet50-lr1e-06-ep20-pt1-aug1-{}%female-D{}-npp{}-ml0-rs0-imgs224_mpara1'.format(
+            f_per, D, 'None')
+        run_config_npp_1= 'resnet50-lr1e-06-ep20-pt1-aug1-{}%female-D{}-npp{}-ml0-rs0-imgs224_mpara1'.format(
+            f_per, D, '1')
 
     # H-PARA FOR MODELS
     model_choose = 'resnet'
@@ -100,9 +106,12 @@ def main(D,dataset,f_per):
 
 
     # load the test samples as dataloader
-    image_size = (224, 224)
     if dataset == 'NIH':
         img_data_dir = '/work3/ninwe/dataset/NIH/preproc_224x224/'
+        col_name_pid = 'Patient ID'
+    else:
+        img_data_dir = '/work3/ninwe/dataset/preproc_224x224/'
+        col_name_pid = 'patient_id'
 
     test_set_npp_None = pd.read_csv(run_dir + '/' + run_config_npp_None + '/test.version_0.csv')
     test_set_npp_1 = pd.read_csv(run_dir + '/' + run_config_npp_1 + '/test.version_0.csv')
@@ -110,9 +119,9 @@ def main(D,dataset,f_per):
     print(test_set_npp_None.shape)
     print(test_set_npp_1.shape)
 
-    pid_none = test_set_npp_None['Patient ID'].unique()
+    pid_none = test_set_npp_None[col_name_pid].unique()
     pid_none.sort()
-    pid_1 = test_set_npp_1['Patient ID'].unique()
+    pid_1 = test_set_npp_1[col_name_pid].unique()
     pid_1.sort()
 
     print(pid_none[:20])
@@ -152,6 +161,15 @@ def main(D,dataset,f_per):
 
 
 if __name__ == '__main__':
+    print('*'*30)
+    print(dataset)
+    print(D_set)
+    print(f_perc_set)
+    print('*' * 30)
+
     for D in D_set:
         for f_per in f_perc_set:
+            print('-' * 30)
+            print('{},{},{}'.format(dataset,D,f_per))
+            print('-' * 30)
             main(D,dataset,f_per)
