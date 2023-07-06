@@ -1,38 +1,10 @@
 import pandas as pd
-import pytorch_lightning as pl
-from torchvision import models
-import torch.nn as nn
 import torch
-import torchvision
-import torch.nn.functional as F
-from torchmetrics import Accuracy,AUROC
-from torchmetrics.classification import MultilabelAUROC
-
 import os
 from tqdm import tqdm
-import numpy as np
-from sklearn.metrics import roc_curve
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import auc
-from sklearn.metrics import classification_report
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import balanced_accuracy_score
-from sklearn.metrics import recall_score
-from collections import defaultdict
-from sklearn.metrics import roc_curve,roc_auc_score
-from sklearn.utils import resample
-from tabulate import tabulate
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_theme(style='white')
-
-from skimage.io import imread
-from PIL import Image
-import torchvision.transforms as T
-
 
 import sys
+sys.path.append('../../NIH_classifer')
 from dataloader.dataloader import NIHDataResampleModule,NIHDataset
 from torch.utils.data import DataLoader
 from prediction.models import ResNet, DenseNet
@@ -42,6 +14,7 @@ D_set = ['Pneumothorax']
 dataset = 'NIH'
 f_perc_set = [0,50,100]
 
+
 run_dir = '/work3/ninwe/run/{}/disease/'.format(dataset)
 out_dir = '/work3/ninwe/run/{}/cross_npp/'.format(dataset)
 if os.path.exists(out_dir) == False:
@@ -50,6 +23,7 @@ if os.path.exists(out_dir) == False:
 
 
 def test(model, data_loader, device):
+    num_classes=1
     model.eval()
     logits = []
     preds = []
@@ -79,6 +53,7 @@ def test(model, data_loader, device):
 
 
 def get_test_dataloader(img_data_dir,df,D):
+    image_size=(224,224)
     test_set = NIHDataset(img_data_dir,df, image_size=image_size, augmentation=False,
                                         pseudo_rgb=False,single_label=D,crop=None)
     dataloader = DataLoader(test_set,batch_size=64, shuffle=False, num_workers=0)
